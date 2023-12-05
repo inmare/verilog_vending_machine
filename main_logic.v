@@ -27,6 +27,7 @@ module main_logic(
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
     output reg [2:0] note_state,
+    output reg [31:0] note_cnt,
     // line1, line2에 출력할 문자열을 저장하는 변수
     output reg [8*16-1:0] line1_text, line2_text,
     // 커서 주소를 저장하는 변수
@@ -84,7 +85,6 @@ module main_logic(
     parameter prod3_init_count = 0;
 
     // 노트 state
-    integer note_cnt;
     // 실제 값은 각각 400000
     // parameter note_play_limit = 20;
     parameter note_play_limit = 400000;
