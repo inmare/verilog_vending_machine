@@ -47,8 +47,6 @@ module vending_machine(
 
     // fnd array 표시용 돈
     wire [7:0] display_money_binary;
-    // text lcd용 현재 상품 개수
-    wire [2:0] prod1_count, prod2_count, prod3_count;
     // piezo용 현재 선택한 상품
     wire [2:0] selected_item;
     // line1, line2에 출력할 문자열을 저장하는 변수
@@ -60,7 +58,6 @@ module vending_machine(
         .clk(clk), .rst(rst),
         .button_sw_oneshot(button_sw_oneshot),
         .display_money_binary(display_money_binary),
-        .prod1_count(prod1_count), .prod2_count(prod2_count), .prod3_count(prod3_count),
         .selected_item(selected_item),
         .line1_text(line1_text), .line2_text(line2_text),
         .ddram_address(ddram_address)

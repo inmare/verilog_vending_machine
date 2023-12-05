@@ -25,8 +25,6 @@ module main_logic(
     input [11:0] button_sw_oneshot,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
-    // text lcd용 현재 상품 개수
-    output reg [2:0] prod1_count, prod2_count, prod3_count,
     // piezo용 현재 선택한 상품
     output reg [2:0] selected_item,
     // line1, line2에 출력할 문자열을 저장하는 변수
@@ -124,6 +122,8 @@ module main_logic(
 
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
+    // 현재 상품 개수
+    reg [2:0] prod1_count, prod2_count, prod3_count;
 
     // 물건 구매시 금액 변화용 always문
     always @(negedge rst, posedge clk) begin
@@ -186,30 +186,18 @@ module main_logic(
                                 selected_item = prod1_id;
                                 selected = 1;
                             end 
-                            // else begin
-                            //     selected_item = 0;
-                            //     selected = 0;
-                            // end
                         end
                         1 : begin
                             if (prod2_count != 0) begin
                                 selected_item = prod2_id;
                                 selected = 1;
                             end 
-                            // else begin
-                            //     selected_item = 0;
-                            //     selected = 0;
-                            // end
                         end
                         2 : begin
                             if (prod3_count != 0) begin
                                 selected_item = prod3_id;
                                 selected = 1;
                             end 
-                            // else begin
-                            //     selected_item = 0;
-                            //     selected = 0;
-                            // end
                         end
                         default : selected_item = 0;
                     endcase
