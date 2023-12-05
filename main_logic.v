@@ -22,7 +22,7 @@
 
 module main_logic(
     input clk, rst,
-    input [11:0] button_sw,
+    input [11:0] button_sw_oneshot,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
     // text lcd용 현재 상품 개수
@@ -48,54 +48,27 @@ module main_logic(
     // parameter return_cnt_limit = 10;
     parameter return_cnt_limit = 1000000;
 
+
     // 커서 이동 버튼
     wire move_up_sw, move_down_sw;
-    one_shot_en_sw move_up(
-        .clk(clk),
-        .enable(button_sw[10]),
-        .eout(move_up_sw)
-    );
-    one_shot_en_sw move_down(
-        .clk(clk),
-        .enable(button_sw[4]),
-        .eout(move_down_sw)
-    );  
+    assign move_up_sw = button_sw_oneshot[10];
+    assign move_down_sw = button_sw_oneshot[4];
 
-    wire select_toggle_sw;
     // 선택 버튼
-    one_shot_en_sw select_toggle(
-        .clk(clk),
-        .enable(button_sw[7]),
-        .eout(select_toggle_sw)
-    );
+    wire select_toggle_sw;
+    assign select_toggle_sw = button_sw_oneshot[7];
 
     // 동전 입력 스위치
     wire [2:0] coin_btn_sw;
-    generate
-        for (i = 0; i < 3; i = i + 1) begin
-            one_shot_en_sw coin_btn(
-                .clk(clk),
-                .enable(button_sw[i]),
-                .eout(coin_btn_sw[i])
-            );
-        end
-    endgenerate
+    assign coin_btn_sw = button_sw_oneshot[2:0];
 
     // 구매 스위치
     wire buy_sw;
-    one_shot_en_sw buy(
-        .clk(clk),
-        .enable(button_sw[9]),
-        .eout(buy_sw)
-    );
+    assign buy_sw = button_sw_oneshot[9];
 
     // 반환 스위치
     wire return_sw;
-    one_shot_en_sw return(
-        .clk(clk),
-        .enable(button_sw[3]),
-        .eout(return_sw)
-    );
+    assign return_sw = button_sw_oneshot[3];
 
     // 각 상품 id
     parameter prod1_id = 1;
