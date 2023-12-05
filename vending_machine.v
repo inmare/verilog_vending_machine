@@ -49,6 +49,7 @@ module vending_machine(
     wire [7:0] display_money_binary;
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
     wire [2:0] note_state;
+    wire [31:0] note_cnt;
     // line1, line2에 출력할 문자열을 저장하는 변수
     wire [8*16-1:0] line1_text, line2_text;
     // 커서 주소를 저장하는 변수
@@ -73,6 +74,7 @@ module vending_machine(
     item_based_piezo item_piezo(
         .clk(clk), .rst(rst),
         .note_state(note_state),
+        .note_cnt(note_cnt),
         .piezo(piezo)
     );
 
