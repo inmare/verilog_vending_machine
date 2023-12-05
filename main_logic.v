@@ -25,8 +25,8 @@ module main_logic(
     input [11:0] button_sw_oneshot,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
-    // piezo용 현재 선택한 상품
-    output reg [2:0] selected_item,
+    // piezo가 어떤 멜로디를 표시할지 정하는 변수
+    output reg [2:0] note_state,
     // line1, line2에 출력할 문자열을 저장하는 변수
     output reg [8*16-1:0] line1_text, line2_text,
     // 커서 주소를 저장하는 변수
@@ -83,10 +83,25 @@ module main_logic(
     parameter prod2_init_count = 1;
     parameter prod3_init_count = 0;
 
+    // 노트 state
+    integer note_cnt;
+    // 실제 값은 각각 400000
+    // parameter note_play_limit = 20;
+    parameter note_play_limit = 400000;
+
+    parameter note_100w = 1;
+    parameter note_500w = 2;
+    parameter note_1000w = 3;
+    parameter note_prod1 = 4;
+    parameter note_prod2 = 5;
+    parameter note_prod3 = 6;
+
     // 현재 커서 위치
     reg [2:0] cursor_pos;
     // 선택, 미선택 여부
     reg selected;
+    // 현재 선택한 상품
+    reg [2:0] selected_item;
 
     // 현재 입력된 돈
     reg [7:0] inserted_money;
@@ -139,6 +154,8 @@ module main_logic(
             prod3_count <= prod3_init_count;
             coin_btn_state <= 0;
             return_state <= 0;
+            note_cnt <= 0;
+            note_state <= 0;
             history_disabled <= 0;
             coin_btn_cnt <= 0;
             return_cnt <= 0;
@@ -184,18 +201,21 @@ module main_logic(
                         0 : begin
                             if (prod1_count != 0) begin
                                 selected_item = prod1_id;
+                                note_state = note_prod1;
                                 selected = 1;
                             end 
                         end
                         1 : begin
                             if (prod2_count != 0) begin
                                 selected_item = prod2_id;
+                                note_state = note_prod2;
                                 selected = 1;
                             end 
                         end
                         2 : begin
                             if (prod3_count != 0) begin
                                 selected_item = prod3_id;
+                                note_state = note_prod3;
                                 selected = 1;
                             end 
                         end
@@ -207,10 +227,22 @@ module main_logic(
             else if (coin_btn_sw != 0) begin
                 // 버튼 스위치에 따라서 inserted_money에 금액을 저장
                 case (coin_btn_sw)
-                    3'b100: inserted_money = 1;
-                    3'b010: inserted_money = 5;
-                    3'b001: inserted_money = 10;
-                    default: inserted_money = 0;
+                    3'b100 : begin
+                        inserted_money = 1;
+                        note_state = note_100w;
+                    end
+                    3'b010 : begin
+                        inserted_money = 5;
+                        note_state = note_500w;
+                    end
+                    3'b001 : begin
+                        inserted_money = 10;
+                        note_state = note_1000w;
+                    end
+                    default : begin
+                        inserted_money = 0;
+                        note_state = 0;
+                    end
                 endcase
                 // 총 입력 금액 역사를 한 칸씩 뒤로 밀고, 
                 // 가장 최근 입력 금액을 추가한 값을 배열 제일 앞에 저장
@@ -312,6 +344,15 @@ module main_logic(
                     end
                 end
                 else return_cnt = return_cnt + 1;
+            end
+
+            // piezo를 위한 if문
+            if (note_state != 0) begin
+                if (note_cnt > note_play_limit) begin
+                    note_cnt = 0;
+                    note_state = 0;
+                end
+                else note_cnt = note_cnt + 1;
             end
             
             // lcd를 위한 if문
