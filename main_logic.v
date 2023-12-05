@@ -27,7 +27,7 @@ module main_logic(
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
     output reg [2:0] note_state,
-    output reg [31:0] note_cnt,
+    output reg [2:0] note_played,
     // line1, line2에 출력할 문자열을 저장하는 변수
     output reg [8*16-1:0] line1_text, line2_text,
     // 커서 주소를 저장하는 변수
@@ -46,7 +46,6 @@ module main_logic(
     integer return_cnt;
     // parameter return_cnt_limit = 10;
     parameter return_cnt_limit = 1000000;
-
 
     // 커서 이동 버튼
     wire move_up_sw, move_down_sw;
@@ -85,35 +84,12 @@ module main_logic(
     parameter prod3_init_count = 0;
 
     // 노트 state
-    // 실제 값은 각각 400000
-    // parameter note_play_limit = 20;
-    parameter note_play_limit = 400000;
-
     parameter note_100w = 1;
     parameter note_500w = 2;
     parameter note_1000w = 3;
     parameter note_prod1 = 4;
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
-
-    // 현재 커서 위치
-    reg [2:0] cursor_pos;
-    // 선택, 미선택 여부
-    reg selected;
-    // 현재 선택한 상품
-    reg [2:0] selected_item;
-
-    // 현재 입력된 돈
-    reg [7:0] inserted_money;
-
-    // 계산 히스토리 저장 현재는 총 10개의 역사 저장 가능
-    reg [7*9-1:0] total_money_history;
-    reg history_disabled;
-
-    // 동전 입력 스위치가 눌러졌는지 알려주는 state
-    reg coin_btn_state;
-    // 반환 스위치가 눌려졌는지 알려주는 state
-    reg return_state;
 
     // 상품명을 저장하는 변수
     // 최대 5글자, 3개의 상품명을 저장
@@ -135,6 +111,36 @@ module main_logic(
         8'h31, 8'h35  // "15"
         };
 
+    // 현재 커서 위치
+    reg [2:0] cursor_pos;
+    // 선택, 미선택 여부
+    reg selected;
+    // 현재 선택한 상품
+    reg [2:0] selected_item;
+
+    // 현재 입력된 돈
+    reg [7:0] inserted_money;
+
+    // 계산 히스토리 저장 현재는 총 10개의 역사 저장 가능
+    reg [7*9-1:0] total_money_history;
+    reg history_disabled;
+
+    // 동전 입력 스위치가 눌러졌는지 알려주는 state
+    reg coin_btn_state;
+    // 반환 스위치가 눌려졌는지 알려주는 state
+    reg return_state;
+
+    integer note_cnt;
+    // 실제 값은 각각 100000, 200000, 300000, 400000
+    // parameter note_1_limit = 5;
+    // parameter note_2_limit = 10;
+    // parameter note_3_limit = 15;
+    // parameter note_4_limit = 20;
+    parameter note_1_limit = 100000;
+    parameter note_2_limit = 200000;
+    parameter note_3_limit = 300000;
+    parameter note_4_limit = 400000;
+
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
     // 현재 상품 개수
@@ -144,25 +150,17 @@ module main_logic(
     always @(negedge rst, posedge clk) begin
         if (!rst) begin
             // 각종 값들 초기화
-            selected_item <= 0;
-            cursor_pos <= 0;
-            selected <= 0;
-            inserted_money <= 0;
-            total_money_history <= 0;
+            selected_item <= 0; cursor_pos <= 0; selected <= 0;
+            inserted_money <= 0; total_money_history <= 0;
             prod1_count <= prod1_init_count;
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
-            coin_btn_state <= 0;
-            return_state <= 0;
-            note_cnt <= 0;
-            note_state <= 0;
+            coin_btn_state <= 0; return_state <= 0; 
+            note_state <= 0; note_played <= 0;
             history_disabled <= 0;
-            coin_btn_cnt <= 0;
-            return_cnt <= 0;
+            coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
             display_money_binary <= 0;
-            line1_text <= 0;
-            line2_text <= 0;
-            ddram_address <= 7'hd;
+            line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
             line1_text[8*16-1:8*9] <= product[8*7*3-1:8*7*2]; // "1.Coke "
             line1_text[8*9-1:8*8] <= 8'h20; // space
@@ -348,11 +346,19 @@ module main_logic(
 
             // piezo를 위한 if문
             if (note_state != 0) begin
-                if (note_cnt > note_play_limit) begin
+                if (note_cnt > note_4_limit) begin
                     note_cnt = 0;
                     note_state = 0;
+                    note_played = 0;
                 end
-                else note_cnt = note_cnt + 1;
+                else begin
+                    if (note_cnt < note_1_limit) note_played = 1;
+                    else if (note_cnt < note_2_limit) note_played = 2;
+                    else if (note_cnt < note_3_limit) note_played = 3;
+                    else if (note_cnt < note_4_limit) note_played = 4;
+                    else note_played = 0;
+                    note_cnt = note_cnt + 1;
+                end
             end
             
             // lcd를 위한 if문
