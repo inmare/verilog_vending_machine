@@ -50,8 +50,8 @@ module item_based_piezo(
     parameter [12*4-1:0] note_500w_lut = { re, fa, la, la };
     parameter [12*4-1:0] note_1000w_lut = { mi, so, ti, ti };
     parameter [12*4-1:0] note_prod1_lut = { do, xx, do, xx };
-    parameter [12*4-1:0] note_prod2_lut = { so, xx, so, xx };
-    parameter [12*4-1:0] note_prod3_lut = { ti, xx, ti, xx };
+    parameter [12*4-1:0] note_prod2_lut = { re, xx, re, xx };
+    parameter [12*4-1:0] note_prod3_lut = { mi, xx, mi, xx };
 
     // 노트를 설정하는 always문
     always @(negedge rst, posedge clk) begin
