@@ -45,6 +45,7 @@ module item_based_piezo(
     parameter note_prod1 = 4;
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
+    parameter note_prod4 = 7;
 
     parameter [12*4-1:0] note_100w_lut = { do, mi, so, so };
     parameter [12*4-1:0] note_500w_lut = { re, fa, la, la };
@@ -52,6 +53,7 @@ module item_based_piezo(
     parameter [12*4-1:0] note_prod1_lut = { do, xx, do, xx };
     parameter [12*4-1:0] note_prod2_lut = { re, xx, re, xx };
     parameter [12*4-1:0] note_prod3_lut = { mi, xx, mi, xx };
+    parameter [12*4-1:0] note_prod4_lut = { fa, xx, fa, xx };
 
     // 노트를 설정하는 always문
     always @(negedge rst, posedge clk) begin
@@ -69,6 +71,7 @@ module item_based_piezo(
                         note_prod1 : piezo_limit = note_prod1_lut[12*4-1:12*3];
                         note_prod2 : piezo_limit = note_prod2_lut[12*4-1:12*3];
                         note_prod3 : piezo_limit = note_prod3_lut[12*4-1:12*3];
+                        note_prod4 : piezo_limit = note_prod4_lut[12*4-1:12*3];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -80,6 +83,7 @@ module item_based_piezo(
                         note_prod1 : piezo_limit = note_prod1_lut[12*3-1:12*2];
                         note_prod2 : piezo_limit = note_prod2_lut[12*3-1:12*2];
                         note_prod3 : piezo_limit = note_prod3_lut[12*3-1:12*2];
+                        note_prod4 : piezo_limit = note_prod4_lut[12*3-1:12*2];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -91,6 +95,7 @@ module item_based_piezo(
                         note_prod1 : piezo_limit = note_prod1_lut[12*2-1:12*1];
                         note_prod2 : piezo_limit = note_prod2_lut[12*2-1:12*1];
                         note_prod3 : piezo_limit = note_prod3_lut[12*2-1:12*1];
+                        note_prod4 : piezo_limit = note_prod4_lut[12*2-1:12*1];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -102,6 +107,7 @@ module item_based_piezo(
                         note_prod1 : piezo_limit = note_prod1_lut[12*1-1:12*0];
                         note_prod2 : piezo_limit = note_prod2_lut[12*1-1:12*0];
                         note_prod3 : piezo_limit = note_prod3_lut[12*1-1:12*0];
+                        note_prod4 : piezo_limit = note_prod4_lut[12*1-1:12*0];
                         default : piezo_limit = xx;
                     endcase
                 end

@@ -89,23 +89,30 @@ module main_logic(
     assign prod_add_sw = button_sw_oneshot[5];
 
     // ----------------parameter 변수들----------------
+    // 커서 이동 제한
+    parameter cursor_upper_limit = 0;
+    parameter cursor_lower_limit = 3;
+
     // 각 상품 id
     parameter prod1_id = 1;
     parameter prod2_id = 2;
     parameter prod3_id = 3;
+    parameter prod4_id = 4;
 
     // 각 상품 가격
     parameter prod1_price = 10;
     parameter prod2_price = 12;
     parameter prod3_price = 15;
+    parameter prod4_price = 18;
 
     // 상품 제한
     parameter prod_limit = 9;
 
     // 각 상품 초기 개수
-    parameter prod1_init_count = 5;
+    parameter prod1_init_count = 9;
     parameter prod2_init_count = 1;
     parameter prod3_init_count = 0;
+    parameter prod4_init_count = 4;
 
     // 노트 state
     parameter note_100w = 1;
@@ -114,6 +121,7 @@ module main_logic(
     parameter note_prod1 = 4;
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
+    parameter note_prod4 = 7;
 
     // lcd에 보여줄 경고문 state
     parameter warn_none             = 0;
@@ -178,45 +186,50 @@ module main_logic(
     };
 
     // 상품 번호 표시를 위한 변수
-    parameter [8*2*3-1:0] prod_num = {
+    parameter [8*2*4-1:0] prod_num = {
         // "1."
         8'h31, 8'h2e, 
         // "2."
         8'h32, 8'h2e, 
         // "3."
-        8'h33, 8'h2e
+        8'h33, 8'h2e,
+        // "4."
+        8'h34, 8'h2e
     };
 
     // 상품명을 저장하는 변수. 최대 5글자, 3개의 상품명을 저장
-    parameter [8*5*3-1:0] product = {
+    parameter [8*5*4-1:0] product = {
         // "Coke "
         8'h43, 8'h6f, 8'h6b, 8'h65, 8'h20,
         // "Water"
         8'h57, 8'h61, 8'h74, 8'h65, 8'h72,
         // "Juice"
-        8'h4a, 8'h75, 8'h69, 8'h63, 8'h65
+        8'h4a, 8'h75, 8'h69, 8'h63, 8'h65,
+        // "Cider"
+        8'h43, 8'h69, 8'h64, 8'h65, 8'h72
         };
 
     // 가격을 글자로 바꿔서 저장하는 변수, 100으로 나눈 몫을 저장
-    parameter [8*2*3-1:0] price_text = {
+    parameter [8*2*4-1:0] price_text = {
         8'h31, 8'h30, // "10"
         8'h31, 8'h32, // "12"
-        8'h31, 8'h35  // "15"
+        8'h31, 8'h35, // "15"
+        8'h31, 8'h38  // "18"
         };
 
     parameter line1_init_text = {
         // "1.Coke "
-        prod_num[8*2*3-1:8*2*2], product[8*5*3-1:8*5*2], 8'h20,
+        prod_num[8*2*4-1:8*2*3], product[8*5*4-1:8*5*3], 8'h20,
         // "10"
-        price_text[8*2*3-1:8*2*2], 
+        price_text[8*2*4-1:8*2*3], 
         // "00W  ^"
         8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h5e
     };
     parameter line2_init_text = {
         // "2.Water"
-        prod_num[8*2*2-1:8*2*1], product[8*5*2-1:8*5*1], 8'h20,
+        prod_num[8*2*3-1:8*2*2], product[8*5*3-1:8*5*2], 8'h20,
         // "12"
-        price_text[8*2*2-1:8*2*1], 
+        price_text[8*2*3-1:8*2*2], 
         // "00W  v"
         8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76
     };
@@ -257,7 +270,7 @@ module main_logic(
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
     // 현재 상품 개수
-    reg [3:0] prod1_count, prod2_count, prod3_count;
+    reg [3:0] prod1_count, prod2_count, prod3_count, prod4_count;
 
     // 물건 구매시 금액 변화용 always문
     always @(negedge rst, posedge clk) begin
@@ -270,6 +283,7 @@ module main_logic(
             prod1_count <= prod1_init_count;
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
+            prod4_count <= prod4_init_count;
             coin_btn_state <= 0; return_state <= 0; warning_state <= 0;
             note_state <= 0; note_played <= 0;
             coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
@@ -283,14 +297,14 @@ module main_logic(
             if (move_up_sw || move_down_sw) begin
                 // move up 버튼이 눌렀을 경우 커서 위치를 한 칸 위로 이동
                 if (move_up_sw) begin
-                    if (cursor_pos > 0) begin
+                    if (cursor_pos > cursor_upper_limit) begin
                         cursor_pos = cursor_pos - 1;
                         ddram_address = 7'hd;
                     end
                 end
                 // move down 버튼이 눌렸을 경우 커서 위치를 한 칸 아래로 이동
                 else if (move_down_sw) begin
-                    if (cursor_pos < 2) begin
+                    if (cursor_pos < cursor_lower_limit) begin
                         cursor_pos = cursor_pos + 1;
                         ddram_address = 7'h4d;
                     end
@@ -299,6 +313,7 @@ module main_logic(
                     0 : prod_count_current = prod1_count;
                     1 : prod_count_current = prod2_count;
                     2 : prod_count_current = prod3_count;
+                    3 : prod_count_current = prod4_count;
                     default : prod_count_current = 0;
                 endcase
             end
@@ -332,6 +347,14 @@ module main_logic(
                                 selected_item = prod3_id;
                                 note_state = note_prod3;
                                 warning_prod_id = prod3_id;
+                                selected = 1;
+                            end 
+                        end
+                        3 : begin
+                            if (prod4_count != 0) begin
+                                selected_item = prod4_id;
+                                note_state = note_prod4;
+                                warning_prod_id = prod4_id;
                                 selected = 1;
                             end 
                         end
@@ -406,7 +429,18 @@ module main_logic(
                         else if (total_money_history[7*9-1:7*8] < prod3_price) 
                             warning_state = warn_not_enough_money;
                     end
+                    prod4_id: begin
+                        if (prod4_count > 0 && total_money_history[7*9-1:7*8] > prod4_price) begin
+                            prod4_count = prod4_count - 1;
+                            total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod4_price;
+                        end
+                        else if (prod4_count == 0) 
+                            warning_state = warn_sold_out;
+                        else if (total_money_history[7*9-1:7*8] < prod4_price) 
+                            warning_state = warn_not_enough_money;
+                    end
                 endcase
+                if (selected_item != 0) begin
                     // 총 금액 역사를 가장 최근 역사를 제외하고 전부 초기화
                     total_money_history[7*8-1:7*0] = 0;
                     // 역사 초기화 상태 활성화
@@ -414,6 +448,7 @@ module main_logic(
                     // 선택한 상품과 선택 여부를 초기화
                     selected_item = 0;
                     selected = 0;
+                end
                 // 표시되는 돈을 총 금액 역사의 가장 최근 값으로 설정
                 display_money_binary = total_money_history[7*9-1:7*8];
             end
@@ -532,9 +567,20 @@ module main_logic(
                             end
                         end
                         2 : begin
-                            // prod 2, prod 3
-                            line1_prod = prod2_id;
-                            line2_prod = prod3_id;
+                            if (ddram_address == 7'h4d) begin
+                                // prod 2, prod 3
+                                line1_prod = prod2_id;
+                                line2_prod = prod3_id;
+                            end
+                            else if (ddram_address == 7'hd) begin
+                                // prod 3, prod 4
+                                line1_prod = prod3_id;
+                                line2_prod = prod4_id;
+                            end
+                        end
+                        3 : begin
+                            line1_prod = prod3_id;
+                            line2_prod = prod4_id;
                         end
                         default : begin
                             // prod 1, prod 2
@@ -545,9 +591,9 @@ module main_logic(
 
                     case (line1_prod)
                         1 : begin
-                            line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2]; 
-                            line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
-                            line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
+                            line1_text[8*16-1:8*14] = prod_num[8*2*4-1:8*2*3]; 
+                            line1_text[8*14-1:8*9] = product[8*5*4-1:8*5*3];
+                            line1_text[8*8-1:8*6] = price_text[8*2*4-1:8*2*3];
                             // 관리자 모드일 경우에는 남은 상품의 개수 보여주기,
                             // 아닐 경우에는 품절 여부만 보여주기
                             if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod1_count;
@@ -560,9 +606,9 @@ module main_logic(
                             else line1_text[8*3-1:8*2] = 8'h20; // space
                         end
                         2 : begin
-                            line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1]; 
-                            line1_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
-                            line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
+                            line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2]; 
+                            line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
+                            line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                             if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
                                 if (prod2_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
@@ -573,9 +619,9 @@ module main_logic(
                             else line1_text[8*3-1:8*2] = 8'h20; // space
                         end
                         3 : begin
-                            line1_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
-                            line1_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
-                            line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
+                            line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
+                            line1_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
+                            line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                             if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
                                 if (prod3_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
@@ -585,9 +631,22 @@ module main_logic(
                             if (line1_prod == selected_item) line1_text[8*3-1:8*2] = 8'h2a; // "*"
                             else line1_text[8*3-1:8*2] = 8'h20; // space
                         end
+                        4 : begin
+                            line1_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
+                            line1_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
+                            line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
+                            if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod4_count;
+                            else begin
+                                if (prod4_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
+                                else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                            end
+
+                            if (line1_prod == selected_item) line1_text[8*3-1:8*2] = 8'h2a; // "*"
+                            else line1_text[8*3-1:8*2] = 8'h20; // space
+                        end
                         default : begin
-                            line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
-                            line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
+                            line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
+                            line1_text[8*14-1:8*9] = product[8*5*4-1:8*5*3];
                             line1_text[8*3-1:8*2] = 8'h20; // "space"
                             line1_text[8*2-1:8*1] = 8'h20; // "space"
                         end
@@ -595,9 +654,9 @@ module main_logic(
 
                     case (line2_prod)
                         1 : begin
-                            line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
-                            line2_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
-                            line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
+                            line2_text[8*16-1:8*14] = prod_num[8*2*4-1:8*2*3];
+                            line2_text[8*14-1:8*9] = product[8*5*4-1:8*5*3];
+                            line2_text[8*8-1:8*6] = price_text[8*2*4-1:8*2*3];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
                             else begin
                                 if (prod1_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
@@ -608,9 +667,9 @@ module main_logic(
                             else line2_text[8*3-1:8*2] = 8'h20; // space
                         end
                         2 : begin
-                            line2_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
-                            line2_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
-                            line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
+                            line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
+                            line2_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
+                            line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
                                 if (prod2_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
@@ -621,9 +680,9 @@ module main_logic(
                             else line2_text[8*3-1:8*2] = 8'h20; // space
                         end
                         3 : begin
-                            line2_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
-                            line2_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
-                            line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
+                            line2_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
+                            line2_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
+                            line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
                                 if (prod3_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
@@ -633,8 +692,21 @@ module main_logic(
                             if (line2_prod == selected_item) line2_text[8*3-1:8*2] = 8'h2a; // "*"
                             else line2_text[8*3-1:8*2] = 8'h20; // space
                         end
+                        4 : begin
+                            line2_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
+                            line2_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
+                            line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
+                            if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod4_count;
+                            else begin
+                                if (prod4_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
+                                else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                            end
+
+                            if (line2_prod == selected_item) line2_text[8*3-1:8*2] = 8'h2a; // "*"
+                            else line2_text[8*3-1:8*2] = 8'h20; // space
+                        end
                         default : begin
-                            line2_text[8*16-1:8*9] = product[8*5*2-1:8*5*1];
+                            line2_text[8*16-1:8*9] = product[8*5*3-1:8*5*2];
                             line2_text[8*3-1:8*2] = 8'h20; // "space"
                             line2_text[8*2-1:8*1] = 8'h20; // "space"
                         end
@@ -644,27 +716,30 @@ module main_logic(
                     line1_text = sold_out_line1;
                     line2_text = sold_out_line2;
                     case (warning_prod_id)
-                        prod1_id : line1_text[8*8-1:8*5] = product[8*5*3-1:8*5*2];
-                        prod2_id : line1_text[8*8-1:8*5] = product[8*5*2-1:8*5*1];
-                        prod3_id : line1_text[8*8-1:8*5] = product[8*5*1-1:8*5*0];
+                        prod1_id : line1_text[8*8-1:8*5] = product[8*5*4-1:8*5*3];
+                        prod2_id : line1_text[8*8-1:8*5] = product[8*5*3-1:8*5*2];
+                        prod3_id : line1_text[8*8-1:8*5] = product[8*5*2-1:8*5*1];
+                        prod4_id : line1_text[8*8-1:8*5] = product[8*5*1-1:8*5*0];
                     endcase
                 end
                 warn_not_enough_money : begin
                     line1_text = not_enough_money_line1;
                     line2_text = not_enough_money_line2;
                     case (warning_prod_id)
-                        prod1_id : line2_text[8*12-1:8*7] = product[8*5*3-1:8*5*2];
-                        prod2_id : line2_text[8*12-1:8*7] = product[8*5*2-1:8*5*1];
-                        prod3_id : line2_text[8*12-1:8*7] = product[8*5*1-1:8*5*0];
+                        prod1_id : line2_text[8*12-1:8*7] = product[8*5*4-1:8*5*3];
+                        prod2_id : line2_text[8*12-1:8*7] = product[8*5*3-1:8*5*2];
+                        prod3_id : line2_text[8*12-1:8*7] = product[8*5*2-1:8*5*1];
+                        prod4_id : line2_text[8*12-1:8*7] = product[8*5*1-1:8*5*0];
                     endcase
                 end
                 warn_buy_product : begin
                     line1_text = buy_product_line1;
                     line2_text = buy_product_line2;
                     case (warning_prod_id)
-                        prod1_id : line2_text[8*8-1:8*3] = product[8*5*3-1:8*5*2];
-                        prod2_id : line2_text[8*8-1:8*3] = product[8*5*2-1:8*5*1];
-                        prod3_id : line2_text[8*8-1:8*3] = product[8*5*1-1:8*5*0];
+                        prod1_id : line2_text[8*8-1:8*3] = product[8*5*4-1:8*5*3];
+                        prod2_id : line2_text[8*8-1:8*3] = product[8*5*3-1:8*5*2];
+                        prod3_id : line2_text[8*8-1:8*3] = product[8*5*2-1:8*5*1];
+                        prod4_id : line2_text[8*8-1:8*3] = product[8*5*1-1:8*5*0];
                     endcase
                 end
                 warn_admin_mode : begin
