@@ -29,6 +29,8 @@ module main_logic(
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
     output reg [3:0] note_state,
     output reg [2:0] note_played,
+    // led용 상품 개수를 알려주는 변수
+    output reg [3:0] prod_count_current,
     // line1, line2에 출력할 문자열을 저장하는 변수
     output reg [8*16-1:0] line1_text, line2_text,
     // 커서 주소를 저장하는 변수
@@ -169,6 +171,7 @@ module main_logic(
             selected_item <= 0; cursor_pos <= 0; selected <= 0;
             inserted_money <= 0; total_money_history <= 0;
             history_disabled <= 0; display_money_binary <= 0;
+            prod_count_current <= 0;
             prod1_count <= prod1_init_count;
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
@@ -188,19 +191,27 @@ module main_logic(
             line2_text[8*6-1:8*0] <= {8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76}; // "00W  v"
         end
         else begin
-            // move up 버튼이 눌렀을 경우 커서 위치를 한 칸 위로 이동
-            if (move_up_sw) begin
-                if (cursor_pos > 0) begin
-                    cursor_pos = cursor_pos - 1;
-                    ddram_address = 7'hd;
+            if (move_up_sw || move_down_sw) begin
+                // move up 버튼이 눌렀을 경우 커서 위치를 한 칸 위로 이동
+                if (move_up_sw) begin
+                    if (cursor_pos > 0) begin
+                        cursor_pos = cursor_pos - 1;
+                        ddram_address = 7'hd;
+                    end
                 end
-            end
-            // move down 버튼이 눌렸을 경우 커서 위치를 한 칸 아래로 이동
-            else if (move_down_sw) begin
-                if (cursor_pos < 2) begin
-                    cursor_pos = cursor_pos + 1;
-                    ddram_address = 7'h4d;
+                // move down 버튼이 눌렸을 경우 커서 위치를 한 칸 아래로 이동
+                else if (move_down_sw) begin
+                    if (cursor_pos < 2) begin
+                        cursor_pos = cursor_pos + 1;
+                        ddram_address = 7'h4d;
+                    end
                 end
+                case (cursor_pos)
+                    0 : prod_count_current = prod1_count;
+                    1 : prod_count_current = prod2_count;
+                    2 : prod_count_current = prod3_count;
+                    default : prod_count_current = 0;
+                endcase
             end
             // 선택 버튼이 눌렸을 경우
             else if (select_toggle_sw) begin
