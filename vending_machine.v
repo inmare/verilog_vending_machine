@@ -28,6 +28,8 @@ module vending_machine(
     output [7:0] seg_com, seg_array,
     // piezo
     output piezo,
+    // led
+    output [3:0] cled_r, cled_g, cled_b,
     // text lcd
     output lcd_e, lcd_rs, lcd_rw,
     output [7:0] lcd_data
@@ -50,6 +52,8 @@ module vending_machine(
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
     wire [3:0] note_state;
     wire [2:0] note_played;
+    // led용 상품 개수를 알려주는 변수
+    wire [3:0] prod_count_current;
     // line1, line2에 출력할 문자열을 저장하는 변수
     wire [8*16-1:0] line1_text, line2_text;
     // 커서 주소를 저장하는 변수
@@ -61,6 +65,7 @@ module vending_machine(
         .admin_mode(admin_mode),
         .display_money_binary(display_money_binary),
         .note_state(note_state), .note_played(note_played),
+        .prod_count_current(prod_count_current),
         .line1_text(line1_text), .line2_text(line2_text),
         .ddram_address(ddram_address)
     );
@@ -79,6 +84,14 @@ module vending_machine(
         .piezo(piezo)
     );
 
+    // 상품 개수에 따라 led 색깔을 바꿈
+    prod_based_led led(
+        .clk(clk), .rst(rst),
+        .prod_count_current(prod_count_current),
+        .cled_r(cled_r), .cled_g(cled_g), .cled_b(cled_b)
+    );
+
+    // text lcd에 문자열을 표시
     text_lcd_display text_lcd(
         .clk(clk), .rst(rst),
         .button_sw(button_sw),
