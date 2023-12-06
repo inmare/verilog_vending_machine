@@ -26,38 +26,11 @@ module money_to_fnd_array(
     output reg [7:0] seg_com, seg_array
     );
 
-    integer i;
-
     // binary to bcd converter
     reg [4*3-1:0] display_money_bcd;
-    // // write double dabble algorithm using input as display_money_binary and output as display_money_bcd
-    // reg [19:0] shift_reg; // Shift register
-
-    // // Conversion process
-    // always @(rst, display_money_binary) begin
-    //     if (!rst) shift_reg = 0;
-    //     else begin
-    //         shift_reg = {12'd0, display_money_binary}; // Initialize shift register with binary input
-
-    //         // Perform the Double Dabble algorithm
-    //         for (i = 0; i < 7; i = i + 1) begin
-    //             // Check for any 5 in the nibbles and add 3 if condition is met
-    //             if (shift_reg[11:8] >= 5)
-    //                 shift_reg[11:8] = shift_reg[11:8] + 3;
-    //             if (shift_reg[15:12] >= 5)
-    //                 shift_reg[15:12] = shift_reg[15:12] + 3;
-    //             if (shift_reg[19:16] >= 5)
-    //                 shift_reg[19:16] = shift_reg[19:16] + 3;
-
-    //             shift_reg = shift_reg << 1; // Left shift by 1
-    //         end
-
-    //         display_money_bcd = shift_reg[19:8]; // Assign the upper 12 bits to the BCD output
-    //     end
-    // end
 
     parameter binary_w = 8;
-    integer j;
+    integer i, j;
 
     always @(negedge rst, posedge clk) begin
         if (!rst) display_money_bcd = 0;
