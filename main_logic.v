@@ -23,7 +23,7 @@
 module main_logic(
     input clk, rst,
     input [11:0] button_sw_oneshot,
-    input admin_mode,
+    input admin_mode, admin_oneshot,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
@@ -203,6 +203,23 @@ module main_logic(
         8'h31, 8'h32, // "12"
         8'h31, 8'h35  // "15"
         };
+
+    parameter line1_init_text = {
+        // "1.Coke "
+        prod_num[8*2*3-1:8*2*2], product[8*5*3-1:8*5*2], 8'h20,
+        // "10"
+        price_text[8*2*3-1:8*2*2], 
+        // "00W  ^"
+        8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h5e
+    };
+    parameter line2_init_text = {
+        // "2.Water"
+        prod_num[8*2*2-1:8*2*1], product[8*5*2-1:8*5*1], 8'h20,
+        // "12"
+        price_text[8*2*2-1:8*2*1], 
+        // "00W  v"
+        8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76
+    };
     
     // ----------------reg 변수들----------------
     // 현재 입력한 금액을 보여주기 위한 cnt
@@ -258,15 +275,9 @@ module main_logic(
             coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
             line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
-            line1_text[8*16-1:8*9] <= product[8*5*3-1:8*5*2]; // "1.Coke "
-            line1_text[8*9-1:8*8] <= 8'h20; // space
-            line1_text[8*8-1:8*6] <= price_text[8*2*3-1:8*2*2]; // "10"
-            line1_text[8*6-1:8*0] <= {8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h5e}; // "00W  ^"
+            line1_text[8*16-1:8*9] <= line1_init_text;
             // "2.Water 1200W  v"
-            line2_text[8*16-1:8*9] <= product[8*5*2-1:8*5*1]; // "2.Water"
-            line2_text[8*9-1:8*8] <= 8'h20; // space
-            line2_text[8*8-1:8*6] <= price_text[8*2*2-1:8*2*1]; // "12"
-            line2_text[8*6-1:8*0] <= {8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76}; // "00W  v"
+            line2_text[8*16-1:8*9] <= line2_init_text;
         end
         else begin
             if (move_up_sw || move_down_sw) begin
@@ -428,6 +439,7 @@ module main_logic(
                     endcase
                 end
             end
+            else if (admin_oneshot) warning_state = warn_admin_mode;
 
             // fnd array를 위한 if문 들
 
