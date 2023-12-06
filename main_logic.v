@@ -116,8 +116,60 @@ module main_logic(
     parameter warn_none             = 0;
     parameter warn_sold_out         = 1;
     parameter warn_not_enough_money = 2;
-    parameter warn_admin_mode       = 3;
-    parameter warn_buy_product      = 4;
+    parameter warn_buy_product      = 3;
+    parameter warn_admin_mode       = 4;
+
+    parameter [8*16-1:0] sold_out_line1 = {
+        // " is"
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h69, 8'h73, 
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
+    parameter [8*16-1:0] sold_out_line2 = {
+        // "sold out!"
+        8'h73, 8'h6f, 8'h6c, 8'h64, 8'h20, 8'h6f, 8'h75, 8'h74, 8'h21, 
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
+
+    parameter [8*16-1:0] not_enough_money_line1 = {
+        // "Not enough "
+        8'h4e, 8'h6f, 8'h74, 8'h20, 8'h65, 8'h6e, 8'h6f, 8'h75, 8'h67, 8'h68, 8'h20, 
+        // "money"
+        8'h6d, 8'h6f, 8'h6e, 8'h65, 8'h79
+    };
+    parameter [8*16-1:0] not_enough_money_line2 = {
+        // "for "
+        8'h66, 8'h6f, 8'h72, 8'h20,
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
+
+    parameter [8*16-1:0] buy_product_line1 = {
+        // "Thank you for"
+        8'h54, 8'h68, 8'h61, 8'h6e, 8'h6b, 8'h20, 8'h79, 8'h6f, 8'h75, 8'h20, 8'h66, 8'h6f, 8'h72,
+        // 공백
+        8'h20, 8'h20
+    };
+    parameter [8*16-1:0] buy_product_line2 = {
+        // "buying "
+        8'h62, 8'h75, 8'h79, 8'h69, 8'h6e, 8'h67, 8'h20,
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
+
+    parameter [8*16-1:0] admin_mode_line1 = {
+        // "You are on"
+        8'h59, 8'h6f, 8'h75, 8'h20, 8'h61, 8'h72, 8'h65, 8'h20, 8'h6f, 8'h6e, 8'h20,
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
+    parameter [8*16-1:0] admin_mode_line2 = {
+        // "admin mode"
+        8'h61, 8'h64, 8'h6d, 8'h69, 8'h6e, 8'h20, 8'h6d, 8'h6f, 8'h64, 8'h65,
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+    };
 
     parameter [8*2*3-1:0] prod_num = {
         // "1."
