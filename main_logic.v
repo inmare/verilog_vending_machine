@@ -27,7 +27,7 @@ module main_logic(
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
-    output reg [2:0] note_state,
+    output reg [3:0] note_state,
     output reg [2:0] note_played,
     // line1, line2에 출력할 문자열을 저장하는 변수
     output reg [8*16-1:0] line1_text, line2_text,
@@ -373,7 +373,7 @@ module main_logic(
                 end
             end
             
-            // lcd를 위한 if문
+            // lcd를 위한 case문
             case (cursor_pos)
                 0 : begin
                     // prod 1, prod 2

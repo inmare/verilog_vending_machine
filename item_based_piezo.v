@@ -22,7 +22,7 @@
 
 module item_based_piezo(
     input clk, rst,
-    input [2:0] note_state,
+    input [3:0] note_state,
     input [2:0] note_played,
     output reg piezo
     );
