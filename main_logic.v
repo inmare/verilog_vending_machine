@@ -35,18 +35,28 @@ module main_logic(
     );
     // generate문용 변수
     genvar i;
-    // 현재 입력한 금액을 보여주기 위한 cnt
+
+    // ----------------실험 때 바뀌는 변수들----------------
     // 실제 값은 2000000으로 설정해야 됨
-    integer coin_btn_cnt;
     // parameter coin_btn_cnt_limit = 20;
     parameter coin_btn_cnt_limit = 2000000;
-
-    // 금액 반환시 금액을 보여주기 위한 cnt
+    
     // 실제 값은 1000000으로 설정해야 됨
-    integer return_cnt;
     // parameter return_cnt_limit = 10;
     parameter return_cnt_limit = 1000000;
 
+    // note_played상태를 바꾼 변수
+    // 실제 값은 각각 100000, 200000, 300000, 400000
+    // parameter note_1_limit = 5;
+    // parameter note_2_limit = 10;
+    // parameter note_3_limit = 15;
+    // parameter note_4_limit = 20;
+    parameter note_1_limit = 100000;
+    parameter note_2_limit = 200000;
+    parameter note_3_limit = 300000;
+    parameter note_4_limit = 400000;
+
+    // --------------스위치를 버튼 변수에 할당---------------
     // 커서 이동 버튼
     wire move_up_sw, move_down_sw;
     assign move_up_sw = button_sw_oneshot[10];
@@ -68,6 +78,7 @@ module main_logic(
     wire return_sw;
     assign return_sw = button_sw_oneshot[3];
 
+    // ----------------parameter 변수들----------------
     // 각 상품 id
     parameter prod1_id = 1;
     parameter prod2_id = 2;
@@ -111,6 +122,13 @@ module main_logic(
         8'h31, 8'h35  // "15"
         };
 
+    // 현재 입력한 금액을 보여주기 위한 cnt
+    integer coin_btn_cnt;
+    // 금액 반환시 금액을 보여주기 위한 cnt
+    integer return_cnt;
+    // note_played 상태를 바꾸기 위한 cnt
+    integer note_cnt;
+
     // 현재 커서 위치
     reg [2:0] cursor_pos;
     // 선택, 미선택 여부
@@ -120,26 +138,15 @@ module main_logic(
 
     // 현재 입력된 돈
     reg [7:0] inserted_money;
-
     // 계산 히스토리 저장 현재는 총 10개의 역사 저장 가능
     reg [7*9-1:0] total_money_history;
+    // 계산 히스토리 비활성화 상태
     reg history_disabled;
 
     // 동전 입력 스위치가 눌러졌는지 알려주는 state
     reg coin_btn_state;
     // 반환 스위치가 눌려졌는지 알려주는 state
     reg return_state;
-
-    integer note_cnt;
-    // 실제 값은 각각 100000, 200000, 300000, 400000
-    // parameter note_1_limit = 5;
-    // parameter note_2_limit = 10;
-    // parameter note_3_limit = 15;
-    // parameter note_4_limit = 20;
-    parameter note_1_limit = 100000;
-    parameter note_2_limit = 200000;
-    parameter note_3_limit = 300000;
-    parameter note_4_limit = 400000;
 
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
@@ -152,14 +159,13 @@ module main_logic(
             // 각종 값들 초기화
             selected_item <= 0; cursor_pos <= 0; selected <= 0;
             inserted_money <= 0; total_money_history <= 0;
+            history_disabled <= 0; display_money_binary <= 0;
             prod1_count <= prod1_init_count;
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
             coin_btn_state <= 0; return_state <= 0; 
             note_state <= 0; note_played <= 0;
-            history_disabled <= 0;
             coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
-            display_money_binary <= 0;
             line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
             line1_text[8*16-1:8*9] <= product[8*7*3-1:8*7*2]; // "1.Coke "
