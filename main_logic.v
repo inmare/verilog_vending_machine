@@ -112,15 +112,23 @@ module main_logic(
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
 
-    // 상품명을 저장하는 변수
-    // 최대 5글자, 3개의 상품명을 저장
+    parameter [8*2*3-1:0] prod_num = {
+        // "1."
+        8'h31, 8'h2e, 
+        // "2."
+        8'h32, 8'h2e, 
+        // "3."
+        8'h33, 8'h2e
+    };
+
+    // 상품명을 저장하는 변수. 최대 5글자, 3개의 상품명을 저장
     parameter [8*7*3-1:0] product = {
-        // "1.Coke "
-        8'h31, 8'h2e, 8'h43, 8'h6f, 8'h6b, 8'h65, 8'h20,
-        // "2.Water"
-        8'h32, 8'h2e, 8'h57, 8'h61, 8'h74, 8'h65, 8'h72,
-        // "3.Juice"
-        8'h33, 8'h2e, 8'h4a, 8'h75, 8'h69, 8'h63, 8'h65
+        // "Coke "
+        8'h43, 8'h6f, 8'h6b, 8'h65, 8'h20,
+        // "Water"
+        8'h57, 8'h61, 8'h74, 8'h65, 8'h72,
+        // "Juice"
+        8'h4a, 8'h75, 8'h69, 8'h63, 8'h65
         };
 
     // 가격을 글자로 바꿔서 저장하는 변수
@@ -436,7 +444,8 @@ module main_logic(
 
             case (line1_prod)
                 1 : begin
-                    line1_text[8*16-1:8*9] = product[8*7*3-1:8*7*2];
+                    line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2]; 
+                    line1_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
                     line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                     // 관리자 모드일 경우에는 남은 상품의 개수 보여주기,
                     // 아닐 경우에는 품절 여부만 보여주기
@@ -450,7 +459,8 @@ module main_logic(
                     else line1_text[8*3-1:8*2] = 8'h20; // space
                 end
                 2 : begin
-                    line1_text[8*16-1:8*9] = product[8*7*2-1:8*7*1];
+                    line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1]; 
+                    line1_text[8*14-1:8*9] = product[8*7*2-1:8*7*1];
                     line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                     if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
                     else begin
@@ -462,7 +472,8 @@ module main_logic(
                     else line1_text[8*3-1:8*2] = 8'h20; // space
                 end
                 3 : begin
-                    line1_text[8*16-1:8*9] = product[8*7*1-1:8*7*0];
+                    line1_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
+                    line1_text[8*14-1:8*9] = product[8*7*1-1:8*7*0];
                     line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
                     if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
                     else begin
@@ -474,7 +485,8 @@ module main_logic(
                     else line1_text[8*3-1:8*2] = 8'h20; // space
                 end
                 default : begin
-                    line1_text[8*16-1:8*9] = product[8*7*3-1:8*7*2];
+                    line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
+                    line1_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
                     line1_text[8*3-1:8*2] = 8'h20; // "space"
                     line1_text[8*2-1:8*1] = 8'h20; // "space"
                 end
@@ -482,7 +494,8 @@ module main_logic(
 
             case (line2_prod)
                 1 : begin
-                    line2_text[8*16-1:8*9] = product[8*7*3-1:8*7*2];
+                    line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
+                    line2_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
                     line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                     if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
                     else begin
@@ -494,7 +507,8 @@ module main_logic(
                     else line2_text[8*3-1:8*2] = 8'h20; // space
                 end
                 2 : begin
-                    line2_text[8*16-1:8*9] = product[8*7*2-1:8*7*1];
+                    line2_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
+                    line2_text[8*14-1:8*9] = product[8*7*2-1:8*7*1];
                     line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                     if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
                     else begin
@@ -506,7 +520,8 @@ module main_logic(
                     else line2_text[8*3-1:8*2] = 8'h20; // space
                 end
                 3 : begin
-                    line2_text[8*16-1:8*9] = product[8*7*1-1:8*7*0];
+                    line2_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
+                    line2_text[8*14-1:8*9] = product[8*7*1-1:8*7*0];
                     line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
                     if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
                     else begin
