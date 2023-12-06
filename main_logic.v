@@ -140,7 +140,7 @@ module main_logic(
         // "sold out!"
         8'h73, 8'h6f, 8'h6c, 8'h64, 8'h20, 8'h6f, 8'h75, 8'h74, 8'h21, 
         // 공백
-        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
     };
 
     parameter [8*16-1:0] not_enough_money_line1 = {
@@ -160,7 +160,7 @@ module main_logic(
         // "Thank you for"
         8'h54, 8'h68, 8'h61, 8'h6e, 8'h6b, 8'h20, 8'h79, 8'h6f, 8'h75, 8'h20, 8'h66, 8'h6f, 8'h72,
         // 공백
-        8'h20, 8'h20
+        8'h20, 8'h20, 8'h20
     };
     parameter [8*16-1:0] buy_product_line2 = {
         // "buying "
