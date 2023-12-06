@@ -98,7 +98,7 @@ module main_logic(
     parameter prod_limit = 9;
 
     // 각 상품 초기 개수
-    parameter prod1_init_count = 4;
+    parameter prod1_init_count = 5;
     parameter prod2_init_count = 1;
     parameter prod3_init_count = 0;
 
