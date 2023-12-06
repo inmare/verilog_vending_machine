@@ -59,6 +59,9 @@ module main_logic(
     parameter note_3_limit = 300000;
     parameter note_4_limit = 400000;
 
+    // parameter warning_cnt_limit = 10;
+    parameter warning_cnt_limit = 1000000;
+
     // --------------스위치를 버튼 변수에 할당---------------
     // 커서 이동 버튼
     wire move_up_sw, move_down_sw;
@@ -231,6 +234,8 @@ module main_logic(
     reg return_state;
     // 경고문 출력 state
     reg [2:0] warning_state;
+    // 경고문에 출력될 상품 id;
+    reg [2:0] warning_prod_id;
 
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
@@ -299,6 +304,7 @@ module main_logic(
                             if (prod1_count != 0) begin
                                 selected_item = prod1_id;
                                 note_state = note_prod1;
+                                warning_prod_id = prod1_id;
                                 selected = 1;
                             end 
                         end
@@ -306,6 +312,7 @@ module main_logic(
                             if (prod2_count != 0) begin
                                 selected_item = prod2_id;
                                 note_state = note_prod2;
+                                warning_prod_id = prod2_id;
                                 selected = 1;
                             end 
                         end
@@ -313,6 +320,7 @@ module main_logic(
                             if (prod3_count != 0) begin
                                 selected_item = prod3_id;
                                 note_state = note_prod3;
+                                warning_prod_id = prod3_id;
                                 selected = 1;
                             end 
                         end
@@ -361,36 +369,40 @@ module main_logic(
                             prod1_count = prod1_count - 1;
                             // 코카콜라의 가격만큼 총 금액을 줄인다
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod1_price;
-                            // 총 금액 역사를 가장 최근 역사를 제외하고 전부 초기화
-                            total_money_history[7*8-1:7*0] = 0;
-                            // 역사 초기화 상태 활성화
-                            history_disabled = 1;
-                            // 선택한 상품과 선택 여부를 초기화
-                            selected_item = 0;
-                            selected = 0;
                         end
+                        else if (prod1_count == 0) 
+                            warning_state = warn_sold_out;
+                        else if (total_money_history[7*9-1:7*8] < prod1_price) 
+                            warning_state = warn_not_enough_money;
                     end
                     prod2_id: begin
                         if (prod2_count > 0 && total_money_history[7*9-1:7*8] > prod2_price) begin
                             prod2_count = prod2_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod2_price;
-                            total_money_history[7*8-1:7*0] = 0;
-                            history_disabled = 1;
-                            selected_item = 0;
-                            selected = 0;
                         end
+                        else if (prod2_count == 0) 
+                            warning_state = warn_sold_out;
+                        else if (total_money_history[7*9-1:7*8] < prod2_price) 
+                            warning_state = warn_not_enough_money;
                     end
                     prod3_id: begin
                         if (prod3_count > 0 && total_money_history[7*9-1:7*8] > prod3_price) begin
                             prod3_count = prod3_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod3_price;
-                            total_money_history[7*8-1:7*0] = 0;
-                            history_disabled = 1;
-                            selected_item = 0;
-                            selected = 0;
                         end
+                        else if (prod3_count == 0) 
+                            warning_state = warn_sold_out;
+                        else if (total_money_history[7*9-1:7*8] < prod3_price) 
+                            warning_state = warn_not_enough_money;
                     end
                 endcase
+                    // 총 금액 역사를 가장 최근 역사를 제외하고 전부 초기화
+                    total_money_history[7*8-1:7*0] = 0;
+                    // 역사 초기화 상태 활성화
+                    history_disabled = 1;
+                    // 선택한 상품과 선택 여부를 초기화
+                    selected_item = 0;
+                    selected = 0;
                 // 표시되는 돈을 총 금액 역사의 가장 최근 값으로 설정
                 display_money_binary = total_money_history[7*9-1:7*8];
             end
@@ -474,6 +486,16 @@ module main_logic(
                     else note_played = 0;
                     note_cnt = note_cnt + 1;
                 end
+            end
+
+            // lcd를 위한 if문
+            if (warning_state != 0) begin
+                if (warning_cnt > warning_cnt_limit) begin
+                    warning_cnt = 0;
+                    warning_state = 0;
+                    warning_prod_id = 0;
+                end
+                else warning_cnt = warning_cnt + 1;
             end
             
             // lcd를 위한 case문
@@ -609,7 +631,7 @@ module main_logic(
                 warn_sold_out : begin
                     line1_text = sold_out_line1;
                     line2_text = sold_out_line2;
-                    case (selected_item)
+                    case (warning_prod_id)
                         prod1_id : line1_text[8*8-1:8*5] = product[8*5*3-1:8*5*2];
                         prod2_id : line1_text[8*8-1:8*5] = product[8*5*2-1:8*5*1];
                         prod3_id : line1_text[8*8-1:8*5] = product[8*5*1-1:8*5*0];
@@ -618,7 +640,7 @@ module main_logic(
                 warn_not_enough_money : begin
                     line1_text = not_enough_money_line1;
                     line2_text = not_enough_money_line2;
-                    case (selected_item)
+                    case (warning_prod_id)
                         prod1_id : line2_text[8*12-1:8*7] = product[8*5*3-1:8*5*2];
                         prod2_id : line2_text[8*12-1:8*7] = product[8*5*2-1:8*5*1];
                         prod3_id : line2_text[8*12-1:8*7] = product[8*5*1-1:8*5*0];
@@ -627,7 +649,7 @@ module main_logic(
                 warn_buy_product : begin
                     line1_text = buy_product_line1;
                     line2_text = buy_product_line2;
-                    case (selected_item)
+                    case (warning_prod_id)
                         prod1_id : line2_text[8*8-1:8*3] = product[8*5*3-1:8*5*2];
                         prod2_id : line2_text[8*8-1:8*3] = product[8*5*2-1:8*5*1];
                         prod3_id : line2_text[8*8-1:8*3] = product[8*5*1-1:8*5*0];
