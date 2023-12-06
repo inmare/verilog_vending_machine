@@ -36,9 +36,6 @@ module main_logic(
     // 커서 주소를 저장하는 변수
     output reg [6:0] ddram_address
     );
-    // generate문용 변수
-    genvar i;
-
     // ----------------실험 때 바뀌는 변수들----------------
     // 실제 값은 2000000으로 설정해야 됨
     // parameter coin_btn_cnt_limit = 20;
