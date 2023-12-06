@@ -23,6 +23,7 @@
 module main_logic(
     input clk, rst,
     input [11:0] button_sw_oneshot,
+    input admin_mode,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
@@ -66,9 +67,9 @@ module main_logic(
     wire select_toggle_sw;
     assign select_toggle_sw = button_sw_oneshot[7];
 
-    // 동전 입력 스위치
-    wire [2:0] coin_btn_sw;
-    assign coin_btn_sw = button_sw_oneshot[2:0];
+    // 동전 입력, 상품 추가 스위치
+    wire [2:0] coin_sw;
+    assign coin_sw = button_sw_oneshot[2:0];
 
     // 구매 스위치
     wire buy_sw;
@@ -77,6 +78,10 @@ module main_logic(
     // 반환 스위치
     wire return_sw;
     assign return_sw = button_sw_oneshot[3];
+
+    // 상품 추가 스위치
+    wire prod_add_sw;
+    assign prod_add_sw = button_sw_oneshot[5];
 
     // ----------------parameter 변수들----------------
     // 각 상품 id
@@ -152,7 +157,7 @@ module main_logic(
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
     // 현재 상품 개수
-    reg [2:0] prod1_count, prod2_count, prod3_count;
+    reg [3:0] prod1_count, prod2_count, prod3_count;
 
     // 물건 구매시 금액 변화용 always문
     always @(negedge rst, posedge clk) begin
@@ -229,9 +234,9 @@ module main_logic(
                 end
             end
             // 동전 입력 스위치를 눌렀을 때
-            else if (coin_btn_sw != 0) begin
+            else if (coin_sw != 0) begin
                 // 버튼 스위치에 따라서 inserted_money에 금액을 저장
-                case (coin_btn_sw)
+                case (coin_sw)
                     3'b100 : begin
                         inserted_money = 1;
                         note_state = note_100w;
@@ -403,8 +408,13 @@ module main_logic(
                 1 : begin
                     line1_text[8*16-1:8*9] = product[8*7*3-1:8*7*2];
                     line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
-                    if (prod1_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                    // 관리자 모드일 경우에는 남은 상품의 개수 보여주기,
+                    // 아닐 경우에는 품절 여부만 보여주기
+                    if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod1_count;
+                    else begin
+                        if (prod1_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line1_text[8*2-1:8*1] = 8'h20; // "space" 
+                    end
 
                     if (line1_prod == selected_item) line1_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line1_text[8*3-1:8*2] = 8'h20; // space
@@ -412,8 +422,11 @@ module main_logic(
                 2 : begin
                     line1_text[8*16-1:8*9] = product[8*7*2-1:8*7*1];
                     line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
-                    if (prod2_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                    if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
+                    else begin
+                        if (prod2_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                    end
 
                     if (line1_prod == selected_item) line1_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line1_text[8*3-1:8*2] = 8'h20; // space
@@ -421,8 +434,11 @@ module main_logic(
                 3 : begin
                     line1_text[8*16-1:8*9] = product[8*7*1-1:8*7*0];
                     line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
-                    if (prod3_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                    if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
+                    else begin
+                        if (prod3_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line1_text[8*2-1:8*1] = 8'h20; // "space"
+                    end
 
                     if (line1_prod == selected_item) line1_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line1_text[8*3-1:8*2] = 8'h20; // space
@@ -438,8 +454,11 @@ module main_logic(
                 1 : begin
                     line2_text[8*16-1:8*9] = product[8*7*3-1:8*7*2];
                     line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
-                    if (prod1_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
+                    else begin
+                        if (prod1_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    end
                 
                     if (line2_prod == selected_item) line2_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line2_text[8*3-1:8*2] = 8'h20; // space
@@ -447,8 +466,11 @@ module main_logic(
                 2 : begin
                     line2_text[8*16-1:8*9] = product[8*7*2-1:8*7*1];
                     line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
-                    if (prod2_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
+                    else begin
+                        if (prod2_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    end
 
                     if (line2_prod == selected_item) line2_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line2_text[8*3-1:8*2] = 8'h20; // space
@@ -456,8 +478,11 @@ module main_logic(
                 3 : begin
                     line2_text[8*16-1:8*9] = product[8*7*1-1:8*7*0];
                     line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
-                    if (prod3_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
-                    else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
+                    else begin
+                        if (prod3_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
+                        else line2_text[8*2-1:8*1] = 8'h20; // "space"
+                    end
 
                     if (line2_prod == selected_item) line2_text[8*3-1:8*2] = 8'h2a; // "*"
                     else line2_text[8*3-1:8*2] = 8'h20; // space

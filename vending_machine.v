@@ -57,6 +57,7 @@ module vending_machine(
     main_logic main_logic(
         .clk(clk), .rst(rst),
         .button_sw_oneshot(button_sw_oneshot),
+        .admin_mode(admin_mode),
         .display_money_binary(display_money_binary),
         .note_state(note_state), .note_played(note_played),
         .line1_text(line1_text), .line2_text(line2_text),
