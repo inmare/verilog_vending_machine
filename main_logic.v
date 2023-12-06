@@ -94,6 +94,9 @@ module main_logic(
     parameter prod2_price = 12;
     parameter prod3_price = 15;
 
+    // 상품 제한
+    parameter prod_limit = 9;
+
     // 각 상품 초기 개수
     parameter prod1_init_count = 4;
     parameter prod2_init_count = 1;
@@ -312,6 +315,22 @@ module main_logic(
                 display_money_binary = total_money_history[7*9-1:7*8];
                 // return state 활성화
                 return_state = 1;
+            end
+            else if (prod_add_sw) begin
+                if (admin_mode) begin
+                    // 관리자 모드일 경우에만 상품 추가 가능
+                    case (cursor_pos)
+                        0 : begin
+                            if (prod1_count < prod_limit) prod1_count = prod1_count + 1;
+                        end
+                        1 : begin
+                            if (prod2_count < prod_limit) prod2_count = prod2_count + 1;
+                        end
+                        2 : begin
+                            if (prod3_count < prod_limit) prod3_count = prod3_count + 1;
+                        end
+                    endcase
+                end
             end
 
             // fnd array를 위한 if문 들
