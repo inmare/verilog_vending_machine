@@ -119,9 +119,12 @@ module main_logic(
     parameter warn_buy_product      = 3;
     parameter warn_admin_mode       = 4;
 
+    // 경고문 변수
     parameter [8*16-1:0] sold_out_line1 = {
+        // 공백
+        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20,
         // " is"
-        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h69, 8'h73, 
+        8'h69, 8'h73, 
         // 공백
         8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
     };
@@ -171,6 +174,7 @@ module main_logic(
         8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
     };
 
+    // 상품 번호 표시를 위한 변수
     parameter [8*2*3-1:0] prod_num = {
         // "1."
         8'h31, 8'h2e, 
@@ -181,7 +185,7 @@ module main_logic(
     };
 
     // 상품명을 저장하는 변수. 최대 5글자, 3개의 상품명을 저장
-    parameter [8*7*3-1:0] product = {
+    parameter [8*5*3-1:0] product = {
         // "Coke "
         8'h43, 8'h6f, 8'h6b, 8'h65, 8'h20,
         // "Water"
@@ -190,9 +194,7 @@ module main_logic(
         8'h4a, 8'h75, 8'h69, 8'h63, 8'h65
         };
 
-    // 가격을 글자로 바꿔서 저장하는 변수
-    // 100원 단위로 물건이 증가하기 때문에 100으로 나눈 몫을 저장
-    // 따라서 2글자만 있으면 됨
+    // 가격을 글자로 바꿔서 저장하는 변수, 100으로 나눈 몫을 저장
     parameter [8*2*3-1:0] price_text = {
         8'h31, 8'h30, // "10"
         8'h31, 8'h32, // "12"
@@ -251,12 +253,12 @@ module main_logic(
             coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
             line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
-            line1_text[8*16-1:8*9] <= product[8*7*3-1:8*7*2]; // "1.Coke "
+            line1_text[8*16-1:8*9] <= product[8*5*3-1:8*5*2]; // "1.Coke "
             line1_text[8*9-1:8*8] <= 8'h20; // space
             line1_text[8*8-1:8*6] <= price_text[8*2*3-1:8*2*2]; // "10"
             line1_text[8*6-1:8*0] <= {8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h5e}; // "00W  ^"
             // "2.Water 1200W  v"
-            line2_text[8*16-1:8*9] <= product[8*7*2-1:8*7*1]; // "2.Water"
+            line2_text[8*16-1:8*9] <= product[8*5*2-1:8*5*1]; // "2.Water"
             line2_text[8*9-1:8*8] <= 8'h20; // space
             line2_text[8*8-1:8*6] <= price_text[8*2*2-1:8*2*1]; // "12"
             line2_text[8*6-1:8*0] <= {8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76}; // "00W  v"
@@ -510,7 +512,7 @@ module main_logic(
                     case (line1_prod)
                         1 : begin
                             line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2]; 
-                            line1_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
+                            line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
                             line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                             // 관리자 모드일 경우에는 남은 상품의 개수 보여주기,
                             // 아닐 경우에는 품절 여부만 보여주기
@@ -525,7 +527,7 @@ module main_logic(
                         end
                         2 : begin
                             line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1]; 
-                            line1_text[8*14-1:8*9] = product[8*7*2-1:8*7*1];
+                            line1_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
                             line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                             if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
@@ -538,7 +540,7 @@ module main_logic(
                         end
                         3 : begin
                             line1_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
-                            line1_text[8*14-1:8*9] = product[8*7*1-1:8*7*0];
+                            line1_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
                             line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
                             if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
@@ -551,7 +553,7 @@ module main_logic(
                         end
                         default : begin
                             line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
-                            line1_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
+                            line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
                             line1_text[8*3-1:8*2] = 8'h20; // "space"
                             line1_text[8*2-1:8*1] = 8'h20; // "space"
                         end
@@ -560,7 +562,7 @@ module main_logic(
                     case (line2_prod)
                         1 : begin
                             line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
-                            line2_text[8*14-1:8*9] = product[8*7*3-1:8*7*2];
+                            line2_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
                             line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
                             else begin
@@ -573,7 +575,7 @@ module main_logic(
                         end
                         2 : begin
                             line2_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
-                            line2_text[8*14-1:8*9] = product[8*7*2-1:8*7*1];
+                            line2_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
                             line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
@@ -586,7 +588,7 @@ module main_logic(
                         end
                         3 : begin
                             line2_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
-                            line2_text[8*14-1:8*9] = product[8*7*1-1:8*7*0];
+                            line2_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
                             line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
                             if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
@@ -598,21 +600,42 @@ module main_logic(
                             else line2_text[8*3-1:8*2] = 8'h20; // space
                         end
                         default : begin
-                            line2_text[8*16-1:8*9] = product[8*7*2-1:8*7*1];
+                            line2_text[8*16-1:8*9] = product[8*5*2-1:8*5*1];
                             line2_text[8*3-1:8*2] = 8'h20; // "space"
                             line2_text[8*2-1:8*1] = 8'h20; // "space"
                         end
                     endcase
                 end
                 warn_sold_out : begin
+                    line1_text = sold_out_line1;
+                    line2_text = sold_out_line2;
+                    case (selected_item)
+                        prod1_id : line1_text[8*8-1:8*5] = product[8*5*3-1:8*5*2];
+                        prod2_id : line1_text[8*8-1:8*5] = product[8*5*2-1:8*5*1];
+                        prod3_id : line1_text[8*8-1:8*5] = product[8*5*1-1:8*5*0];
+                    endcase
                 end
                 warn_not_enough_money : begin
-                end
-                warn_admin_mode : begin
+                    line1_text = not_enough_money_line1;
+                    line2_text = not_enough_money_line2;
+                    case (selected_item)
+                        prod1_id : line2_text[8*12-1:8*7] = product[8*5*3-1:8*5*2];
+                        prod2_id : line2_text[8*12-1:8*7] = product[8*5*2-1:8*5*1];
+                        prod3_id : line2_text[8*12-1:8*7] = product[8*5*1-1:8*5*0];
+                    endcase
                 end
                 warn_buy_product : begin
+                    line1_text = buy_product_line1;
+                    line2_text = buy_product_line2;
+                    case (selected_item)
+                        prod1_id : line2_text[8*8-1:8*3] = product[8*5*3-1:8*5*2];
+                        prod2_id : line2_text[8*8-1:8*3] = product[8*5*2-1:8*5*1];
+                        prod3_id : line2_text[8*8-1:8*3] = product[8*5*1-1:8*5*0];
+                    endcase
                 end
-                default : begin
+                warn_admin_mode : begin
+                    line1_text = admin_mode_line1;
+                    line2_text = admin_mode_line2;
                 end
             endcase
         end
