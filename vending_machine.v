@@ -47,6 +47,13 @@ module vending_machine(
         end
     endgenerate
 
+    wire admin_oneshot;
+    one_shot_en_sw admin_oneshot_inst(
+        .clk(clk),
+        .enable(admin_mode),
+        .eout(admin_oneshot)
+    );
+
     // fnd array 표시용 돈
     wire [7:0] display_money_binary;
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
@@ -62,7 +69,7 @@ module vending_machine(
     main_logic main_logic(
         .clk(clk), .rst(rst),
         .button_sw_oneshot(button_sw_oneshot),
-        .admin_mode(admin_mode),
+        .admin_mode(admin_mode), .admin_oneshot(admin_oneshot),
         .display_money_binary(display_money_binary),
         .note_state(note_state), .note_played(note_played),
         .prod_count_current(prod_count_current),
