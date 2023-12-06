@@ -471,6 +471,9 @@ module main_logic(
                         2 : begin
                             if (prod3_count < prod_limit) prod3_count = prod3_count + 1;
                         end
+                        3 : begin
+                            if (prod4_count < prod_limit) prod4_count = prod4_count + 1;
+                        end
                     endcase
                 end
             end
