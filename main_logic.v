@@ -286,8 +286,8 @@ module main_logic(
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
             prod4_count <= prod4_init_count;
-            coin_btn_state <= 0; return_state <= 0; 
-            warning_state <= 0; admin_mode_state <= 0;
+            coin_btn_state <= 0; return_state <= 0; admin_mode_state <= 0;
+            warning_state <= 0; warning_prod_id <= 0;
             note_state <= 0; note_played <= 0;
             coin_btn_cnt <= 0; return_cnt <= 0; 
             note_cnt <= 0; warning_cnt <= 0;
