@@ -125,26 +125,9 @@ module main_logic(
 
     // lcd에 보여줄 경고문 state
     parameter warn_none             = 0;
-    parameter warn_sold_out         = 1;
-    parameter warn_not_enough_money = 2;
-    parameter warn_buy_product      = 3;
-    parameter warn_admin_mode       = 4;
-
-    // 경고문 변수
-    parameter [8*16-1:0] sold_out_line1 = {
-        // 공백
-        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20,
-        // " is"
-        8'h69, 8'h73, 
-        // 공백
-        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
-    };
-    parameter [8*16-1:0] sold_out_line2 = {
-        // "sold out!"
-        8'h73, 8'h6f, 8'h6c, 8'h64, 8'h20, 8'h6f, 8'h75, 8'h74, 8'h21, 
-        // 공백
-        8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20, 8'h20
-    };
+    parameter warn_not_enough_money = 1;
+    parameter warn_buy_product      = 2;
+    parameter warn_admin_mode       = 3;
 
     parameter [8*16-1:0] not_enough_money_line1 = {
         // "Not enough "
@@ -409,8 +392,6 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod1_price;
                             warning_state = warn_buy_product;
                         end
-                        else if (prod1_count == 0) 
-                            warning_state = warn_sold_out;
                         else if (total_money_history[7*9-1:7*8] < prod1_price) 
                             warning_state = warn_not_enough_money;
                     end
@@ -420,8 +401,6 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod2_price;
                             warning_state = warn_buy_product;
                         end
-                        else if (prod2_count == 0) 
-                            warning_state = warn_sold_out;
                         else if (total_money_history[7*9-1:7*8] < prod2_price) 
                             warning_state = warn_not_enough_money;
                     end
@@ -431,8 +410,6 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod3_price;
                             warning_state = warn_buy_product;
                         end
-                        else if (prod3_count == 0) 
-                            warning_state = warn_sold_out;
                         else if (total_money_history[7*9-1:7*8] < prod3_price) 
                             warning_state = warn_not_enough_money;
                     end
@@ -442,8 +419,6 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod4_price;
                             warning_state = warn_buy_product;
                         end
-                        else if (prod4_count == 0) 
-                            warning_state = warn_sold_out;
                         else if (total_money_history[7*9-1:7*8] < prod4_price) 
                             warning_state = warn_not_enough_money;
                     end
@@ -724,16 +699,6 @@ module main_logic(
                             line2_text[8*3-1:8*2] = 8'h20; // "space"
                             line2_text[8*2-1:8*1] = 8'h20; // "space"
                         end
-                    endcase
-                end
-                warn_sold_out : begin
-                    line1_text = sold_out_line1;
-                    line2_text = sold_out_line2;
-                    case (warning_prod_id)
-                        prod1_id : line1_text[8*8-1:8*5] = product[8*5*4-1:8*5*3];
-                        prod2_id : line1_text[8*8-1:8*5] = product[8*5*3-1:8*5*2];
-                        prod3_id : line1_text[8*8-1:8*5] = product[8*5*2-1:8*5*1];
-                        prod4_id : line1_text[8*8-1:8*5] = product[8*5*1-1:8*5*0];
                     endcase
                 end
                 warn_not_enough_money : begin
