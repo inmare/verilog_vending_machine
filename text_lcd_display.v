@@ -48,6 +48,22 @@ module text_lcd_display(
         end
     endgenerate
 
+    wire [8*16-1:0] line1_text_oneshot, line2_text_oneshot;
+    generate
+        for (i = 0; i < 8*16; i = i + 1) begin
+            one_shot_en_sw line1_text_oneshot_inst(
+                .clk(clk_100hz),
+                .enable(line1_text[i]),
+                .eout(line1_text_oneshot[i])
+            );
+            one_shot_en_sw line2_text_oneshot_inst(
+                .clk(clk_100hz),
+                .enable(line2_text[i]),
+                .eout(line2_text_oneshot[i])
+            );
+        end
+    endgenerate
+
     // text lcd의 상태를 저장하는 변수
     reg [3:0] text_lcd_state;
     parameter delay           = 0;
@@ -85,7 +101,8 @@ module text_lcd_display(
                 line2 :         if (text_lcd_cnt == line2_cnt)           text_lcd_state <= delay_t;
                 delay_t : begin
                     if (text_lcd_cnt == delay_t_cnt) text_lcd_state <= delay_t;
-                    else if (button_sw != 0) text_lcd_state <= line1;
+                    else if (button_oneshot_sw != 0) text_lcd_state <= line1;
+                    else if (line1_text_oneshot != 0 || line2_text_oneshot != 0) text_lcd_state <= line1;
                 end
                 // clear disp는 따로 작성하지 않음
                 default : text_lcd_state <= delay;
@@ -106,7 +123,8 @@ module text_lcd_display(
                 line2 :         if (text_lcd_cnt == line2_cnt)           text_lcd_cnt <= 0; else text_lcd_cnt <= text_lcd_cnt + 1;
                 delay_t : begin
                     if (text_lcd_cnt == delay_t_cnt) text_lcd_cnt <= 0; 
-                    else if (button_sw != 0) text_lcd_cnt <= 0;
+                    else if (button_oneshot_sw != 0) text_lcd_cnt <= 0;
+                    else if (line1_text_oneshot != 0 || line2_text_oneshot != 0) text_lcd_cnt <= 0;
                     else text_lcd_cnt <= text_lcd_cnt + 1;
                 end
                 default: text_lcd_cnt <= 0;
