@@ -649,8 +649,9 @@ module main_logic(
                             else line1_text[8*3-1:8*2] = 8'h20; // space
                         end
                         default : begin
-                            line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
+                            line1_text[8*16-1:8*14] = prod_num[8*2*4-1:8*2*3];
                             line1_text[8*14-1:8*9] = product[8*5*4-1:8*5*3];
+                            line1_text[8*8-1:8*6] = price_text[8*2*4-1:8*2*3];
                             line1_text[8*3-1:8*2] = 8'h20; // "space"
                             line1_text[8*2-1:8*1] = 8'h20; // "space"
                         end
@@ -710,11 +711,20 @@ module main_logic(
                             else line2_text[8*3-1:8*2] = 8'h20; // space
                         end
                         default : begin
-                            line2_text[8*16-1:8*9] = product[8*5*3-1:8*5*2];
+                            line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
+                            line2_text[8*14-1-1:8*9] = product[8*5*3-1:8*5*2];
+                            line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
                             line2_text[8*3-1:8*2] = 8'h20; // "space"
                             line2_text[8*2-1:8*1] = 8'h20; // "space"
                         end
                     endcase
+
+                    line1_text[8*9-1:8*8] = 8'h20; // "space"
+                    line1_text[8*6-1:8*3] = {8'h30, 8'h30, 8'h57}; // "00W"
+                    line1_text[8*1-1:8*0] = 8'h5e; // "^"
+                    line2_text[8*9-1:8*8] = 8'h20; // "space"
+                    line2_text[8*6-1:8*3] = {8'h30, 8'h30, 8'h57}; // "00W"
+                    line2_text[8*1-1:8*0] = 8'h76; // "v"
                 end
                 warn_not_enough_money : begin
                     line1_text = not_enough_money_line1;
