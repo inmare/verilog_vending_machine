@@ -68,7 +68,7 @@ module main_logic(
     wire select_toggle_sw;
     assign select_toggle_sw = button_sw_oneshot[7];
 
-    // 동전 입력, 상품 추가 스위치
+    // 동전 입력
     wire [2:0] coin_sw;
     assign coin_sw = button_sw_oneshot[2:0];
 
