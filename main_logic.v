@@ -269,15 +269,15 @@ module main_logic(
             prod3_count <= prod3_init_count;
             prod4_count <= prod4_init_count;
             coin_btn_state <= 0; return_state <= 0; admin_mode_state <= 0;
-            warning_state <= 0; warning_prod_id <= 0;
+            warning_state <= warn_none; warning_prod_id <= 0;
             note_state <= 0; note_played <= 0;
             coin_btn_cnt <= 0; return_cnt <= 0; 
             note_cnt <= 0; warning_cnt <= 0;
-            line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
+            ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
-            line1_text[8*16-1:8*9] <= line1_init_text;
+            line1_text <= line1_init_text;
             // "2.Water 1200W  v"
-            line2_text[8*16-1:8*9] <= line2_init_text;
+            line2_text <= line2_init_text;
         end
         else begin
             if (move_up_sw || move_down_sw) begin
