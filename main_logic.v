@@ -281,7 +281,7 @@ module main_logic(
             selected_item <= 0; cursor_pos <= 0; selected <= 0;
             inserted_money <= 0; total_money_history <= 0;
             history_disabled <= 0; display_money_binary <= 0;
-            prod_count_current <= 0;
+            prod_count_current <= prod1_init_count;
             prod1_count <= prod1_init_count;
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
