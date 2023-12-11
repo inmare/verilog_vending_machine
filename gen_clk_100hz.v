@@ -28,9 +28,8 @@ module gen_clk_100hz(
     // 한번에 100hz로 만들기에는 cnt를 위한 bit가 너무 많아져서 1khz로 만들고 100hz로 만듦
 
     // 1khz clk
-    // 실제로는 5000을 사용함
+    // 실제로는 1000을 사용함
     // parameter clk_1khz_limit = 2;
-    // parameter clk_1khz_limit = 5000;
     parameter clk_1khz_limit = 1000;
     integer cnt_1khz;
 
