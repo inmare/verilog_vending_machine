@@ -93,7 +93,6 @@ module vending_machine(
     text_lcd_display text_lcd(
         .clk(clk), .rst(rst),
         .button_sw(button_sw),
-        .admin_mode(admin_mode),
         .line1_text(line1_text), .line2_text(line2_text),
         .ddram_address(ddram_address),
         .lcd_e(lcd_e), .lcd_rs(lcd_rs), .lcd_rw(lcd_rw),

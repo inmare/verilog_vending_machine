@@ -481,8 +481,8 @@ module main_logic(
                 end
             end
             else if (admin_mode_sw) begin
-                warning_state = warn_admin_mode;
                 admin_mode_state = ~admin_mode_state;
+                if (admin_mode_state) warning_state = warn_admin_mode;
             end
 
             // fnd array를 위한 if문 들
