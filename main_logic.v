@@ -199,8 +199,7 @@ module main_logic(
         8'h31, 8'h35, // "15"
         8'h31, 8'h38  // "18"
         };
-
-    parameter line1_init_text = {
+    parameter [8*16-1:0] line1_init_text = {
         // "1.Coke "
         prod_num[8*2*4-1:8*2*3], product[8*5*4-1:8*5*3], 8'h20,
         // "10"
@@ -208,7 +207,7 @@ module main_logic(
         // "00W  ^"
         8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h5e
     };
-    parameter line2_init_text = {
+    parameter [8*16-1:0] line2_init_text = {
         // "2.Water"
         prod_num[8*2*3-1:8*2*2], product[8*5*3-1:8*5*2], 8'h20,
         // "12"
