@@ -54,9 +54,9 @@ module main_logic(
     parameter note_3_limit = 300000;
     parameter note_4_limit = 400000;
 
-    // 실제 값은 1000000으로 설정해야 됨
+    // 실제 값은 3000000으로 설정해야 됨
     // parameter warning_cnt_limit = 10;
-    parameter warning_cnt_limit = 1000000;
+    parameter warning_cnt_limit = 3000000;
 
     // --------------스위치를 버튼 변수에 할당---------------
     // 커서 이동 버튼
@@ -215,7 +215,7 @@ module main_logic(
         // "00W  v"
         8'h30, 8'h30, 8'h57, 8'h20, 8'h20, 8'h76
     };
-    
+
     // ----------------reg 변수들----------------
     // 현재 입력한 금액을 보여주기 위한 cnt
     integer coin_btn_cnt;
