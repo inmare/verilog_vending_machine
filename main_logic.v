@@ -449,16 +449,28 @@ module main_logic(
                     // 관리자 모드일 경우에만 상품 추가 가능
                     case (cursor_pos)
                         0 : begin
-                            if (prod1_count < prod_limit) prod1_count = prod1_count + 1;
+                            if (prod1_count < prod_limit) begin
+                                prod1_count = prod1_count + 1;
+                                prod_count_current = prod1_count;
+                            end
                         end
                         1 : begin
-                            if (prod2_count < prod_limit) prod2_count = prod2_count + 1;
+                            if (prod2_count < prod_limit) begin
+                                prod2_count = prod2_count + 1;
+                                prod_count_current = prod2_count;
+                            end
                         end
                         2 : begin
-                            if (prod3_count < prod_limit) prod3_count = prod3_count + 1;
+                            if (prod3_count < prod_limit) begin
+                                prod3_count = prod3_count + 1;
+                                prod_count_current = prod3_count;
+                            end
                         end
                         3 : begin
-                            if (prod4_count < prod_limit) prod4_count = prod4_count + 1;
+                            if (prod4_count < prod_limit) begin
+                                prod4_count = prod4_count + 1;
+                                prod_count_current = prod4_count;
+                            end
                         end
                     endcase
                 end
