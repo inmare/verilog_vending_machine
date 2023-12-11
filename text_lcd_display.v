@@ -23,7 +23,6 @@
 module text_lcd_display(
     input clk, rst,
     input [11:0] button_sw,
-    input admin_mode,
     input [8*16-1:0] line1_text, line2_text,
     input [6:0] ddram_address,
     output lcd_e, 
@@ -48,23 +47,6 @@ module text_lcd_display(
             );
         end
     endgenerate
-
-    wire admin_posedge, admin_negedge;
-    one_shot_en_sw admin_oneshot(
-        .clk(clk_100hz),
-        .enable(admin_mode),
-        .eout(admin_posedge)
-    );
-    one_shot_en_sw admin_oneshot2(
-        .clk(clk_100hz),
-        .enable(~admin_mode),
-        .eout(admin_negedge)
-    );
-    wire admin_sw_oneshot;
-    assign admin_sw_oneshot = admin_posedge | admin_negedge;
-
-    wire rewrite_text;
-    assign rewrite_text = (button_sw != 0) | admin_sw_oneshot;
 
     // text lcd의 상태를 저장하는 변수
     reg [3:0] text_lcd_state;
@@ -103,7 +85,7 @@ module text_lcd_display(
                 line2 :         if (text_lcd_cnt == line2_cnt)           text_lcd_state <= delay_t;
                 delay_t : begin
                     if (text_lcd_cnt == delay_t_cnt) text_lcd_state <= delay_t;
-                    else if (rewrite_text) text_lcd_state <= line1;
+                    else if (button_sw != 0) text_lcd_state <= line1;
                 end
                 // clear disp는 따로 작성하지 않음
                 default : text_lcd_state <= delay;
@@ -124,7 +106,7 @@ module text_lcd_display(
                 line2 :         if (text_lcd_cnt == line2_cnt)           text_lcd_cnt <= 0; else text_lcd_cnt <= text_lcd_cnt + 1;
                 delay_t : begin
                     if (text_lcd_cnt == delay_t_cnt) text_lcd_cnt <= 0; 
-                    else if (rewrite_text) text_lcd_cnt <= 0;
+                    else if (button_sw != 0) text_lcd_cnt <= 0;
                     else text_lcd_cnt <= text_lcd_cnt + 1;
                 end
                 default: text_lcd_cnt <= 0;

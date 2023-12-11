@@ -23,7 +23,6 @@
 module main_logic(
     input clk, rst,
     input [11:0] button_sw_oneshot,
-    input admin_mode, admin_oneshot,
     // 최종적으로 fnd array에 표시될 돈
     output reg [7:0] display_money_binary,
     // piezo가 어떤 멜로디를 표시할지 정하는 변수
@@ -84,6 +83,10 @@ module main_logic(
     // 상품 추가 스위치
     wire prod_add_sw;
     assign prod_add_sw = button_sw_oneshot[5];
+
+    // 관리자 모드 스위치
+    wire admin_mode_sw;
+    assign admin_mode_sw = button_sw_oneshot[11];
 
     // ----------------parameter 변수들----------------
     // 커서 이동 제한
@@ -263,6 +266,8 @@ module main_logic(
     reg [2:0] warning_state;
     // 경고문에 출력될 상품 id;
     reg [2:0] warning_prod_id;
+    // 관리자 모드 state
+    reg admin_mode_state;
 
     // 현재 lcd에 표시될 상품을 표시하는 변수
     reg [2:0] line1_prod, line2_prod;
@@ -281,7 +286,8 @@ module main_logic(
             prod2_count <= prod2_init_count;
             prod3_count <= prod3_init_count;
             prod4_count <= prod4_init_count;
-            coin_btn_state <= 0; return_state <= 0; warning_state <= 0;
+            coin_btn_state <= 0; return_state <= 0; 
+            warning_state <= 0; admin_mode_state <= 0;
             note_state <= 0; note_played <= 0;
             coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
             line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
@@ -456,7 +462,7 @@ module main_logic(
                 return_state = 1;
             end
             else if (prod_add_sw) begin
-                if (admin_mode) begin
+                if (admin_mode_state) begin
                     // 관리자 모드일 경우에만 상품 추가 가능
                     case (cursor_pos)
                         0 : begin
@@ -474,7 +480,10 @@ module main_logic(
                     endcase
                 end
             end
-            else if (admin_oneshot) warning_state = warn_admin_mode;
+            else if (admin_mode_sw) begin
+                warning_state = warn_admin_mode;
+                admin_mode_state = ~admin_mode_state;
+            end
 
             // fnd array를 위한 if문 들
 
@@ -596,7 +605,7 @@ module main_logic(
                             line1_text[8*8-1:8*6] = price_text[8*2*4-1:8*2*3];
                             // 관리자 모드일 경우에는 남은 상품의 개수 보여주기,
                             // 아닐 경우에는 품절 여부만 보여주기
-                            if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod1_count;
+                            if (admin_mode_state) line1_text[8*2-1:8*1] = 8'h30 + prod1_count;
                             else begin
                                 if (prod1_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line1_text[8*2-1:8*1] = 8'h20; // "space" 
@@ -609,7 +618,7 @@ module main_logic(
                             line1_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2]; 
                             line1_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
                             line1_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
-                            if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
+                            if (admin_mode_state) line1_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
                                 if (prod2_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line1_text[8*2-1:8*1] = 8'h20; // "space"
@@ -622,7 +631,7 @@ module main_logic(
                             line1_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
                             line1_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
                             line1_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
-                            if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
+                            if (admin_mode_state) line1_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
                                 if (prod3_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line1_text[8*2-1:8*1] = 8'h20; // "space"
@@ -635,7 +644,7 @@ module main_logic(
                             line1_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
                             line1_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
                             line1_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
-                            if (admin_mode) line1_text[8*2-1:8*1] = 8'h30 + prod4_count;
+                            if (admin_mode_state) line1_text[8*2-1:8*1] = 8'h30 + prod4_count;
                             else begin
                                 if (prod4_count == 0) line1_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line1_text[8*2-1:8*1] = 8'h20; // "space"
@@ -657,7 +666,7 @@ module main_logic(
                             line2_text[8*16-1:8*14] = prod_num[8*2*4-1:8*2*3];
                             line2_text[8*14-1:8*9] = product[8*5*4-1:8*5*3];
                             line2_text[8*8-1:8*6] = price_text[8*2*4-1:8*2*3];
-                            if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
+                            if (admin_mode_state) line2_text[8*2-1:8*1] = 8'h30 + prod1_count;
                             else begin
                                 if (prod1_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line2_text[8*2-1:8*1] = 8'h20; // "space"
@@ -670,7 +679,7 @@ module main_logic(
                             line2_text[8*16-1:8*14] = prod_num[8*2*3-1:8*2*2];
                             line2_text[8*14-1:8*9] = product[8*5*3-1:8*5*2];
                             line2_text[8*8-1:8*6] = price_text[8*2*3-1:8*2*2];
-                            if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
+                            if (admin_mode_state) line2_text[8*2-1:8*1] = 8'h30 + prod2_count;
                             else begin
                                 if (prod2_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line2_text[8*2-1:8*1] = 8'h20; // "space"
@@ -683,7 +692,7 @@ module main_logic(
                             line2_text[8*16-1:8*14] = prod_num[8*2*2-1:8*2*1];
                             line2_text[8*14-1:8*9] = product[8*5*2-1:8*5*1];
                             line2_text[8*8-1:8*6] = price_text[8*2*2-1:8*2*1];
-                            if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
+                            if (admin_mode_state) line2_text[8*2-1:8*1] = 8'h30 + prod3_count;
                             else begin
                                 if (prod3_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line2_text[8*2-1:8*1] = 8'h20; // "space"
@@ -696,7 +705,7 @@ module main_logic(
                             line2_text[8*16-1:8*14] = prod_num[8*2*1-1:8*2*0];
                             line2_text[8*14-1:8*9] = product[8*5*1-1:8*5*0];
                             line2_text[8*8-1:8*6] = price_text[8*2*1-1:8*2*0];
-                            if (admin_mode) line2_text[8*2-1:8*1] = 8'h30 + prod4_count;
+                            if (admin_mode_state) line2_text[8*2-1:8*1] = 8'h30 + prod4_count;
                             else begin
                                 if (prod4_count == 0) line2_text[8*2-1:8*1] = 8'h58; // "X"
                                 else line2_text[8*2-1:8*1] = 8'h20; // "space"
