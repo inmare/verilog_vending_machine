@@ -485,7 +485,7 @@ module main_logic(
             // 동전 입력 버튼이 눌려졌을 때
             if (coin_btn_state) begin
                 // 표시된 cnt값을 넘었을 때
-                if (coin_btn_cnt >= coin_btn_cnt_limit) begin
+                if (coin_btn_cnt == coin_btn_cnt_limit) begin
                     coin_btn_cnt = 0;
                     coin_btn_state = 0;
                     // 표시되는 돈을 총 금액 역사의 가장 최근 값으로 되돌려 줌
@@ -495,7 +495,7 @@ module main_logic(
             end
             // 반환 버튼이 눌러졌을 때
             else if (return_state) begin
-                if (return_cnt >= return_cnt_limit) begin
+                if (return_cnt == return_cnt_limit) begin
                     return_cnt = 0;
                     // 구매 상태가 아닐 때
                     if (!history_disabled) begin
@@ -524,7 +524,7 @@ module main_logic(
 
             // piezo를 위한 if문
             if (note_state != 0) begin
-                if (note_cnt > note_4_limit) begin
+                if (note_cnt == note_4_limit) begin
                     note_cnt = 0;
                     note_state = 0;
                     note_played = 0;
@@ -541,10 +541,10 @@ module main_logic(
 
             // lcd를 위한 if문
             if (warning_state != 0) begin
-                if (warning_cnt > warning_cnt_limit) begin
+                if (warning_cnt == warning_cnt_limit) begin
                     warning_cnt = 0;
-                    warning_state = 0;
                     warning_prod_id = 0;
+                    warning_state = 0;
                 end
                 else warning_cnt = warning_cnt + 1;
             end
