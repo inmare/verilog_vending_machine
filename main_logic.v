@@ -384,39 +384,43 @@ module main_logic(
                 case (selected_item)
                     prod1_id: begin
                         // 코카콜라의 개수가 0보다 크고 총 금액이 코카콜라의 가격보다 크면
-                        if (prod1_count > 0 && total_money_history[7*9-1:7*8] > prod1_price) begin
+                        if (prod1_count > 0 && total_money_history[7*9-1:7*8] >= prod1_price) begin
                             // 코카콜라의 개수를 하나 줄이고
                             prod1_count = prod1_count - 1;
                             // 코카콜라의 가격만큼 총 금액을 줄인다
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod1_price;
                             warning_state = warn_buy_product;
+                            prod_count_current = prod1_count;
                         end
                         else if (total_money_history[7*9-1:7*8] < prod1_price) 
                             warning_state = warn_not_enough_money;
                     end
                     prod2_id: begin
-                        if (prod2_count > 0 && total_money_history[7*9-1:7*8] > prod2_price) begin
+                        if (prod2_count > 0 && total_money_history[7*9-1:7*8] >= prod2_price) begin
                             prod2_count = prod2_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod2_price;
                             warning_state = warn_buy_product;
+                            prod_count_current = prod2_count;
                         end
                         else if (total_money_history[7*9-1:7*8] < prod2_price) 
                             warning_state = warn_not_enough_money;
                     end
                     prod3_id: begin
-                        if (prod3_count > 0 && total_money_history[7*9-1:7*8] > prod3_price) begin
+                        if (prod3_count > 0 && total_money_history[7*9-1:7*8] >= prod3_price) begin
                             prod3_count = prod3_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod3_price;
                             warning_state = warn_buy_product;
+                            prod_count_current = prod3_count;
                         end
                         else if (total_money_history[7*9-1:7*8] < prod3_price) 
                             warning_state = warn_not_enough_money;
                     end
                     prod4_id: begin
-                        if (prod4_count > 0 && total_money_history[7*9-1:7*8] > prod4_price) begin
+                        if (prod4_count > 0 && total_money_history[7*9-1:7*8] >= prod4_price) begin
                             prod4_count = prod4_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod4_price;
                             warning_state = warn_buy_product;
+                            prod_count_current = prod4_count;
                         end
                         else if (total_money_history[7*9-1:7*8] < prod4_price) 
                             warning_state = warn_not_enough_money;
