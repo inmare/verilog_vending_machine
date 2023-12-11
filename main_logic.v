@@ -44,7 +44,6 @@ module main_logic(
     // parameter return_cnt_limit = 10;
     parameter return_cnt_limit = 1000000;
 
-    // note_played상태를 바꾼 변수
     // 실제 값은 각각 100000, 200000, 300000, 400000
     // parameter note_1_limit = 5;
     // parameter note_2_limit = 10;
@@ -55,6 +54,7 @@ module main_logic(
     parameter note_3_limit = 300000;
     parameter note_4_limit = 400000;
 
+    // 실제 값은 1000000으로 설정해야 됨
     // parameter warning_cnt_limit = 10;
     parameter warning_cnt_limit = 1000000;
 
