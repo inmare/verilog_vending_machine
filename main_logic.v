@@ -289,7 +289,8 @@ module main_logic(
             coin_btn_state <= 0; return_state <= 0; 
             warning_state <= 0; admin_mode_state <= 0;
             note_state <= 0; note_played <= 0;
-            coin_btn_cnt <= 0; return_cnt <= 0; note_cnt <= 0;
+            coin_btn_cnt <= 0; return_cnt <= 0; 
+            note_cnt <= 0; warning_cnt <= 0;
             line1_text <= 0; line2_text <= 0; ddram_address <= 7'hd;
             // "1.Coke  1000W  ^"
             line1_text[8*16-1:8*9] <= line1_init_text;
