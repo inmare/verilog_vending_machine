@@ -406,6 +406,7 @@ module main_logic(
                             prod1_count = prod1_count - 1;
                             // 코카콜라의 가격만큼 총 금액을 줄인다
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod1_price;
+                            warning_state = warn_buy_product;
                         end
                         else if (prod1_count == 0) 
                             warning_state = warn_sold_out;
@@ -416,6 +417,7 @@ module main_logic(
                         if (prod2_count > 0 && total_money_history[7*9-1:7*8] > prod2_price) begin
                             prod2_count = prod2_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod2_price;
+                            warning_state = warn_buy_product;
                         end
                         else if (prod2_count == 0) 
                             warning_state = warn_sold_out;
@@ -426,6 +428,7 @@ module main_logic(
                         if (prod3_count > 0 && total_money_history[7*9-1:7*8] > prod3_price) begin
                             prod3_count = prod3_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod3_price;
+                            warning_state = warn_buy_product;
                         end
                         else if (prod3_count == 0) 
                             warning_state = warn_sold_out;
@@ -436,6 +439,7 @@ module main_logic(
                         if (prod4_count > 0 && total_money_history[7*9-1:7*8] > prod4_price) begin
                             prod4_count = prod4_count - 1;
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod4_price;
+                            warning_state = warn_buy_product;
                         end
                         else if (prod4_count == 0) 
                             warning_state = warn_sold_out;
