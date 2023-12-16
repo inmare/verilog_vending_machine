@@ -355,25 +355,19 @@ module main_logic(
             end
             // 동전 입력 스위치를 눌렀을 때
             else if (coin_sw != 0) begin
-                if (total_money_history[7*9-1:7*8] < 100) begin
-                    // 버튼 스위치에 따라서 inserted_money에 금액을 저장
+                // 버튼 스위치에 따라서 inserted_money에 금액을 저장
+                case (coin_sw)
+                    3'b100 : inserted_money = 1;
+                    3'b010 : inserted_money = 5;
+                    3'b001 : inserted_money = 10;
+                    default : inserted_money = 0;
+                endcase
+                if (total_money_history[7*8-1:7*7] + inserted_money < 100) begin
                     case (coin_sw)
-                        3'b100 : begin
-                            inserted_money = 1;
-                            note_state = note_100w;
-                        end
-                        3'b010 : begin
-                            inserted_money = 5;
-                            note_state = note_500w;
-                        end
-                        3'b001 : begin
-                            inserted_money = 10;
-                            note_state = note_1000w;
-                        end
-                        default : begin
-                            inserted_money = 0;
-                            note_state = 0;
-                        end
+                        3'b100 : note_state = note_100w;
+                        3'b010 : note_state = note_500w;
+                        3'b001 : note_state = note_1000w;
+                        default : note_state = 0;
                     endcase
                     // 총 입력 금액 역사를 한 칸씩 뒤로 밀고, 
                     // 가장 최근 입력 금액을 추가한 값을 배열 제일 앞에 저장
@@ -384,6 +378,8 @@ module main_logic(
                     // 동전 입력 state 활성화
                     coin_btn_state = 1;
                 end
+                else 
+                    inserted_money = 0;
             end
             // 구매 스위치를 눌렀을 때
             else if (buy_sw) begin
