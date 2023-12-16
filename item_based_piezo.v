@@ -46,6 +46,11 @@ module item_based_piezo(
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
     parameter note_prod4 = 7;
+    parameter note_buy_prod1 = 8;
+    parameter note_buy_prod2 = 9;
+    parameter note_buy_prod3 = 10;
+    parameter note_buy_prod4 = 11;
+    parameter note_warn = 12;
 
     parameter [12*4-1:0] note_100w_lut = { do, mi, so, so };
     parameter [12*4-1:0] note_500w_lut = { re, fa, la, la };
@@ -54,6 +59,11 @@ module item_based_piezo(
     parameter [12*4-1:0] note_prod2_lut = { re, xx, re, xx };
     parameter [12*4-1:0] note_prod3_lut = { mi, xx, mi, xx };
     parameter [12*4-1:0] note_prod4_lut = { fa, xx, fa, xx };
+    parameter [12*4-1:0] note_buy_prod1_lut = { do, re, mi, fa };
+    parameter [12*4-1:0] note_buy_prod2_lut = { re, mi, fa, so };
+    parameter [12*4-1:0] note_buy_prod3_lut = { mi, fa, so, la };
+    parameter [12*4-1:0] note_buy_prod4_lut = { fa, so, la, ti };
+    parameter [12*4-1:0] note_warn_lut = { ti, ti, ti, ti };
 
     // 노트를 설정하는 always문
     always @(negedge rst, posedge clk) begin
@@ -72,6 +82,11 @@ module item_based_piezo(
                         note_prod2 : piezo_limit = note_prod2_lut[12*4-1:12*3];
                         note_prod3 : piezo_limit = note_prod3_lut[12*4-1:12*3];
                         note_prod4 : piezo_limit = note_prod4_lut[12*4-1:12*3];
+                        note_buy_prod1 : piezo_limit = note_buy_prod1_lut[12*4-1:12*3];
+                        note_buy_prod2 : piezo_limit = note_buy_prod2_lut[12*4-1:12*3];
+                        note_buy_prod3 : piezo_limit = note_buy_prod3_lut[12*4-1:12*3];
+                        note_buy_prod4 : piezo_limit = note_buy_prod4_lut[12*4-1:12*3];
+                        note_warn : piezo_limit = note_warn_lut[12*4-1:12*3];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -84,6 +99,11 @@ module item_based_piezo(
                         note_prod2 : piezo_limit = note_prod2_lut[12*3-1:12*2];
                         note_prod3 : piezo_limit = note_prod3_lut[12*3-1:12*2];
                         note_prod4 : piezo_limit = note_prod4_lut[12*3-1:12*2];
+                        note_buy_prod1 : piezo_limit = note_buy_prod1_lut[12*3-1:12*2];
+                        note_buy_prod2 : piezo_limit = note_buy_prod2_lut[12*3-1:12*2];
+                        note_buy_prod3 : piezo_limit = note_buy_prod3_lut[12*3-1:12*2];
+                        note_buy_prod4 : piezo_limit = note_buy_prod4_lut[12*3-1:12*2];
+                        note_warn : piezo_limit = note_warn_lut[12*3-1:12*2];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -96,6 +116,11 @@ module item_based_piezo(
                         note_prod2 : piezo_limit = note_prod2_lut[12*2-1:12*1];
                         note_prod3 : piezo_limit = note_prod3_lut[12*2-1:12*1];
                         note_prod4 : piezo_limit = note_prod4_lut[12*2-1:12*1];
+                        note_buy_prod1 : piezo_limit = note_buy_prod1_lut[12*2-1:12*1];
+                        note_buy_prod2 : piezo_limit = note_buy_prod2_lut[12*2-1:12*1];
+                        note_buy_prod3 : piezo_limit = note_buy_prod3_lut[12*2-1:12*1];
+                        note_buy_prod4 : piezo_limit = note_buy_prod4_lut[12*2-1:12*1];
+                        note_warn : piezo_limit = note_warn_lut[12*2-1:12*1];
                         default : piezo_limit = xx;
                     endcase
                 end
@@ -108,6 +133,11 @@ module item_based_piezo(
                         note_prod2 : piezo_limit = note_prod2_lut[12*1-1:12*0];
                         note_prod3 : piezo_limit = note_prod3_lut[12*1-1:12*0];
                         note_prod4 : piezo_limit = note_prod4_lut[12*1-1:12*0];
+                        note_buy_prod1 : piezo_limit = note_buy_prod1_lut[12*1-1:12*0];
+                        note_buy_prod2 : piezo_limit = note_buy_prod2_lut[12*1-1:12*0];
+                        note_buy_prod3 : piezo_limit = note_buy_prod3_lut[12*1-1:12*0];
+                        note_buy_prod4 : piezo_limit = note_buy_prod4_lut[12*1-1:12*0];
+                        note_warn : piezo_limit = note_warn_lut[12*1-1:12*0];
                         default : piezo_limit = xx;
                     endcase
                 end

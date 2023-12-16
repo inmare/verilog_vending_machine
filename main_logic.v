@@ -122,6 +122,11 @@ module main_logic(
     parameter note_prod2 = 5;
     parameter note_prod3 = 6;
     parameter note_prod4 = 7;
+    parameter note_buy_prod1 = 8;
+    parameter note_buy_prod2 = 9;
+    parameter note_buy_prod3 = 10;
+    parameter note_buy_prod4 = 11;
+    parameter note_warn = 12;
 
     // lcd에 보여줄 경고문 state
     parameter warn_none             = 0;
@@ -393,9 +398,15 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod1_price;
                             warning_state = warn_buy_product;
                             prod_count_current = prod1_count;
+                            note_state = note_buy_prod1;
                         end
-                        else if (total_money_history[7*9-1:7*8] < prod1_price) 
+                        else if (total_money_history[7*9-1:7*8] < prod1_price) begin
                             warning_state = warn_not_enough_money;
+                            note_state = note_warn;
+                        end
+                        else if (prod1_count == 0) begin
+                            note_state = note_warn;
+                        end
                     end
                     prod2_id: begin
                         if (prod2_count > 0 && total_money_history[7*9-1:7*8] >= prod2_price) begin
@@ -403,9 +414,15 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod2_price;
                             warning_state = warn_buy_product;
                             prod_count_current = prod2_count;
+                            note_state = note_buy_prod2;
                         end
-                        else if (total_money_history[7*9-1:7*8] < prod2_price) 
+                        else if (total_money_history[7*9-1:7*8] < prod2_price) begin
                             warning_state = warn_not_enough_money;
+                            note_state = note_warn;
+                        end
+                        else if (prod2_count == 0) begin
+                            note_state = note_warn;
+                        end
                     end
                     prod3_id: begin
                         if (prod3_count > 0 && total_money_history[7*9-1:7*8] >= prod3_price) begin
@@ -413,9 +430,15 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod3_price;
                             warning_state = warn_buy_product;
                             prod_count_current = prod3_count;
+                            note_state = note_buy_prod3;
                         end
-                        else if (total_money_history[7*9-1:7*8] < prod3_price) 
+                        else if (total_money_history[7*9-1:7*8] < prod3_price) begin
                             warning_state = warn_not_enough_money;
+                            note_state = note_warn;
+                        end
+                        else if (prod3_count == 0) begin
+                            note_state = note_warn;
+                        end
                     end
                     prod4_id: begin
                         if (prod4_count > 0 && total_money_history[7*9-1:7*8] >= prod4_price) begin
@@ -423,9 +446,15 @@ module main_logic(
                             total_money_history[7*9-1:7*8] = total_money_history[7*9-1:7*8] - prod4_price;
                             warning_state = warn_buy_product;
                             prod_count_current = prod4_count;
+                            note_state = note_buy_prod4;
                         end
-                        else if (total_money_history[7*9-1:7*8] < prod4_price) 
+                        else if (total_money_history[7*9-1:7*8] < prod4_price) begin
                             warning_state = warn_not_enough_money;
+                            note_state = note_warn;
+                        end
+                        else if (prod4_count == 0) begin
+                            note_state = note_warn;
+                        end
                     end
                 endcase
                 if (selected_item != 0) begin
