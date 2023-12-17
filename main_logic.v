@@ -54,9 +54,9 @@ module main_logic(
     parameter note_3_limit = 300000;
     parameter note_4_limit = 400000;
 
-    // 실제 값은 3000000으로 설정해야 됨
+    // 실제 값은 2000000으로 설정해야 됨
     // parameter warning_cnt_limit = 10;
-    parameter warning_cnt_limit = 3000000;
+    parameter warning_cnt_limit = 2000000;
 
     // --------------스위치를 버튼 변수에 할당---------------
     // 커서 이동 버튼
