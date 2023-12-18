@@ -362,7 +362,7 @@ module main_logic(
                     3'b001 : inserted_money = 10;
                     default : inserted_money = 0;
                 endcase
-                if (total_money_history[7*8-1:7*7] + inserted_money < 100) begin
+                if (total_money_history[7*9-1:7*8] + inserted_money < 100) begin
                     case (coin_sw)
                         3'b100 : note_state = note_100w;
                         3'b010 : note_state = note_500w;
